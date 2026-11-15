@@ -1,0 +1,23 @@
+# Secrets
+.env
+
+# Java / Maven / Gradle
+target/
+build/
+.gradle/
+*.class
+*.log
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
