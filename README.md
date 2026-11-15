@@ -14,7 +14,7 @@ Angular · Spring Boot · PostgreSQL/PostGIS · Supabase Auth · Docker
 ## Lancer le projet
 ```bash
 cp .env.example .env     # puis remplir les valeurs
-docker compose up
+docker compose up -d     # demarre la base de donnees
 ```
 (À compléter une fois le backend et le frontend ajoutés.)
 
