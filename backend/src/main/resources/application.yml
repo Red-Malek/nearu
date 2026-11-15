@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: nearu-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:nearu}
+    username: ${POSTGRES_USER:nearu}
+    password: ${POSTGRES_PASSWORD:nearu}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
