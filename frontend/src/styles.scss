@@ -1,1 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+:root {
+  color-scheme: light;
+  font-family: 'DM Sans', Arial, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --near-ink: #172b25;
+  --near-green: #183b30;
+  --near-orange: #f47732;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+body { margin: 0; min-width: 320px; background: #fff; }
+button, input, textarea { font: inherit; }
+a { -webkit-tap-highlight-color: transparent; }
+.section-wrap { width: min(1160px, calc(100% - 64px)); margin-inline: auto; }
+.button { min-height:46px; padding:0 21px; border:0; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; gap:17px; font-family:inherit; font-size:13px; font-weight:700; line-height:1; text-decoration:none; cursor:pointer; transition:transform .2s,box-shadow .2s; }
+.button:hover { transform:translateY(-2px); box-shadow:0 8px 20px #173c2d20; }
+.button-dark { color:#fff; background:#112d27; }
+.button-orange { color:#fff; background:#f47732; box-shadow:0 8px 18px #f477322b; }
+.button-white { color:#183b30; background:#fff; }
+@media(max-width:900px) { .section-wrap { width:min(calc(100% - 42px),760px); } }
+@media(max-width:650px) { .section-wrap { width:calc(100% - 36px); } }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; } }
