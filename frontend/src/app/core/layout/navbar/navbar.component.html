@@ -1,0 +1,11 @@
+<header class="site-header section-wrap">
+  <app-logo />
+  <nav class="main-nav" aria-label="Navigation principale">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Accueil</a>
+    <a routerLink="/" fragment="how-it-works">Comment ça marche</a>
+    <a routerLink="/" fragment="about">À propos</a>
+    <a routerLink="/" fragment="providers">Prestataires</a>
+    <a routerLink="/" fragment="contact">Contact</a>
+  </nav>
+  <a class="button button-dark header-cta" routerLink="/" fragment="contact">Connexion <span>↗</span></a>
+</header>

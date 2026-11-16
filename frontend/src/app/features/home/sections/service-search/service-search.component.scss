@@ -1,0 +1,119 @@
+.search-panel {
+  min-height: 88px;
+  margin-top: -4px;
+  padding: 14px 17px;
+  border: 1px solid #edf1ec;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  background: #fff;
+  box-shadow: 0 12px 36px #173d2b0d;
+}
+
+.search-panel label {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.field-icon {
+  color: #e87a37;
+  font-size: 23px;
+}
+
+.field-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* QUOI ? / OÙ ? / CATÉGORIE */
+.field-copy small {
+  color: #42594c;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  line-height: 1.3;
+}
+
+/* Input text */
+.field-copy input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #294638;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.field-copy input::placeholder {
+  color: #849189;
+  opacity: 1;
+}
+
+.search-divider {
+  width: 1px;
+  height: 37px;
+  background: #e9eee9;
+}
+
+.search-button {
+  min-width: 135px;
+}
+
+@media (max-width: 900px) {
+  .search-panel {
+    gap: 10px;
+  }
+
+  .field-copy input {
+    font-size: 14px;
+  }
+
+  .search-button {
+    min-width: 112px;
+    padding-inline: 14px;
+  }
+}
+
+@media (max-width: 650px) {
+  .search-panel {
+    margin-top: 10px;
+    padding: 17px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 17px 12px;
+  }
+
+  .search-divider,
+  .category-field {
+    display: none !important;
+  }
+
+  .search-button {
+    width: 100%;
+    min-width: 0;
+  }
+}
+.field-copy select {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #294638;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+}
+@media (max-width: 650px) { .field-copy select { font-size: 14px; } }
