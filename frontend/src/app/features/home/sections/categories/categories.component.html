@@ -1,0 +1,25 @@
+<section class="categories section-wrap" id="categories" aria-labelledby="categories-title">
+  <h2 id="categories-title">Parcourir par catégorie</h2>
+
+  @if (loading()) {
+    <p class="state" role="status">Chargement des catégories…</p>
+  } @else if (failed()) {
+    <p class="state" role="alert">
+      Impossible de charger les catégories.
+      <button type="button" class="retry" (click)="load()">Réessayer</button>
+    </p>
+  } @else if (categories().length === 0) {
+    <p class="state">Aucune catégorie disponible pour le moment.</p>
+  } @else {
+    <ul class="grid">
+      @for (c of categories(); track c.id) {
+        <li>
+          <a class="card" routerLink="/" fragment="search" [attr.data-category]="c.slug">
+            <span class="icon" aria-hidden="true">{{ icon(c) }}</span>
+            <span class="label">{{ c.name }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</section>
