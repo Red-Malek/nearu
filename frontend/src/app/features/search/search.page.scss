@@ -1,0 +1,172 @@
+// Agreed palette (navy / orange), scoped to this page.
+:host {
+  --navy: #0b2343;
+  --orange: #ff7417;
+  --field: #e8edf7;
+  display: block;
+  padding-bottom: 64px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+h1 {
+  margin: 40px 0 8px;
+  color: var(--navy);
+  font-size: clamp(30px, 5vw, 46px);
+  line-height: 1.15;
+
+  em {
+    color: var(--orange);
+    font-style: normal;
+  }
+}
+
+.subtitle {
+  margin: 0 0 28px;
+  color: #5b6577;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #e3e8f0;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 12px 36px #0b234312;
+
+  label {
+    flex: 1;
+    min-width: 0;
+  }
+
+  select {
+    width: 100%;
+    height: 46px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--field);
+    color: var(--navy);
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+  }
+}
+
+.submit {
+  min-width: 140px;
+  height: 46px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--orange);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.results {
+  margin-top: 36px;
+}
+
+.results-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+
+  h2 {
+    margin: 0;
+    color: var(--navy);
+    font-size: 24px;
+  }
+}
+
+.count {
+  color: #5b6577;
+  font-size: 13px;
+}
+
+.message {
+  margin: 16px 0 0;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: var(--field);
+  color: var(--navy);
+}
+
+.message-error {
+  background: #fdecea;
+  color: #8a1f11;
+}
+
+.cards {
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.card {
+  display: flex;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #e3e8f0;
+  border-radius: 18px;
+  background: #fff;
+}
+
+.avatar {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--navy);
+  color: #fff;
+  font-weight: 700;
+}
+
+.card-body {
+  min-width: 0;
+
+  h3 {
+    margin: 0 0 4px;
+    color: var(--navy);
+    font-size: 18px;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.services {
+  color: #3d4859;
+  font-size: 14px;
+}
+
+.city {
+  margin-top: 10px !important;
+  color: #5b6577;
+  font-size: 13px;
+}
+
+@media (max-width: 650px) {
+  .search-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
