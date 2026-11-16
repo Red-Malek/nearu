@@ -1,7 +1,12 @@
 <section class="search-panel section-wrap" id="search" aria-label="Rechercher un prestataire">
   <label><span class="field-icon">⌕</span><span class="field-copy"><small>QUOI ?</small><input type="text" placeholder="Plomberie, électricité, peinture..." aria-label="Service recherché"></span></label>
   <span class="search-divider"></span>
-  <label><span class="field-icon">⌖</span><span class="field-copy"><small>OÙ ?</small><input type="text" placeholder="Votre ville ou quartier" aria-label="Localisation"></span></label>
+  <label><span class="field-icon">⌖</span><span class="field-copy"><small>OÙ ?</small><select aria-label="Ville" (change)="onCityChange($event)">
+      <option value="">Toutes les villes</option>
+      @for (g of governorates(); track g.id) {
+        <option [value]="g.code">{{ g.name }}</option>
+      }
+    </select></span></label>
   <span class="search-divider"></span>
   <label class="category-field"><span class="field-icon">▦</span><span class="field-copy"><small>CATÉGORIE</small><select aria-label="Catégorie" (change)="onCategoryChange($event)">
       <option value="">Tous les services</option>
@@ -9,5 +14,5 @@
         <option [value]="c.slug">{{ c.name }}</option>
       }
     </select></span></label>
-  <a class="button button-orange search-button" routerLink="/" fragment="providers">Rechercher <span>→</span></a>
+  <button type="button" class="button button-orange search-button" (click)="search()">Rechercher <span>→</span></button>
 </section>

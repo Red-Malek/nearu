@@ -1,0 +1,62 @@
+<section class="search-page section-wrap">
+  <h1>Trouvez un <em>professionnel</em> près de chez vous</h1>
+  <p class="subtitle">Découvrez les prestataires locaux qui répondent à vos besoins.</p>
+
+  <form class="search-bar" (submit)="onSubmit($event, categorySelect.value, citySelect.value)">
+    <label>
+      <span class="sr-only">Catégorie</span>
+      <select #categorySelect aria-label="Catégorie">
+        <option value="" [selected]="!category()">Tous les services</option>
+        @for (c of categories(); track c.id) {
+          <option [value]="c.slug" [selected]="c.slug === category()">{{ c.name }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      <span class="sr-only">Ville</span>
+      <select #citySelect aria-label="Ville">
+        <option value="" [selected]="!city()">Toutes les villes</option>
+        @for (g of governorates(); track g.id) {
+          <option [value]="g.code" [selected]="g.code === city()">{{ g.name }}</option>
+        }
+      </select>
+    </label>
+    <button type="submit" class="submit">Rechercher</button>
+  </form>
+
+  <div class="results" aria-live="polite">
+    @switch (status()) {
+      @case ('loading') {
+        <p class="message">Recherche en cours…</p>
+      }
+      @case ('error') {
+        <p class="message message-error">La recherche est momentanément indisponible. Veuillez réessayer.</p>
+      }
+      @default {
+        <div class="results-head">
+          <h2>Prestataires</h2>
+          <span class="count">{{ providers().length }} {{ providers().length > 1 ? 'résultats' : 'résultat' }}</span>
+        </div>
+
+        @if (providers().length === 0) {
+          <p class="message empty">
+            Aucun prestataire ne correspond à votre recherche. Essayez une autre catégorie ou une autre ville.
+          </p>
+        } @else {
+          <ul class="cards">
+            @for (p of providers(); track p.id) {
+              <li class="card">
+                <span class="avatar" aria-hidden="true">{{ initials(p.name) }}</span>
+                <div class="card-body">
+                  <h3>{{ p.name }}</h3>
+                  <p class="services">{{ p.services.join(' · ') }}</p>
+                  <p class="city"><span aria-hidden="true">⌖</span> {{ p.city }}</p>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      }
+    }
+  </div>
+</section>

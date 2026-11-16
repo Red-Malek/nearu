@@ -1,0 +1,27 @@
+-- US04: the 24 governorates of Tunisia, used as "ville" in provider search (idempotent on code)
+INSERT INTO governorates (code, name) VALUES
+    ('tunis',       'Tunis'),
+    ('ariana',      'Ariana'),
+    ('ben-arous',   'Ben Arous'),
+    ('manouba',     'Manouba'),
+    ('nabeul',      'Nabeul'),
+    ('zaghouan',    'Zaghouan'),
+    ('bizerte',     'Bizerte'),
+    ('beja',        'Béja'),
+    ('jendouba',    'Jendouba'),
+    ('le-kef',      'Le Kef'),
+    ('siliana',     'Siliana'),
+    ('sousse',      'Sousse'),
+    ('monastir',    'Monastir'),
+    ('mahdia',      'Mahdia'),
+    ('sfax',        'Sfax'),
+    ('kairouan',    'Kairouan'),
+    ('kasserine',   'Kasserine'),
+    ('sidi-bouzid', 'Sidi Bouzid'),
+    ('gabes',       'Gabès'),
+    ('medenine',    'Médenine'),
+    ('tataouine',   'Tataouine'),
+    ('gafsa',       'Gafsa'),
+    ('tozeur',      'Tozeur'),
+    ('kebili',      'Kébili')
+ON CONFLICT (code) DO NOTHING;
