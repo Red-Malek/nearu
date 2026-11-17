@@ -2,6 +2,7 @@ package com.nearu.backend.servicerequest;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -18,10 +19,9 @@ import jakarta.persistence.Table;
 /**
  * Demande de service envoyée par un client à un prestataire (table service_requests).
  * <p>
- * Les clés étrangères sont gardées sous forme d'UUID pour ne pas dépendre des entités
- * Catégorie / Prestataire / Gouvernorat développées par les autres membres de l'équipe.
- * Les colonnes non mappées (lat, lng, preferred_time_slot, urgency, quote_count…)
- * prennent leur valeur par défaut définie dans la migration V1.
+ * Les clés étrangères restent des UUID pour ne pas dépendre des entités Catégorie /
+ * Prestataire / Gouvernorat des autres fonctionnalités. Les colonnes non mappées
+ * (rejection_reason, quote_count…) gardent leur valeur par défaut (V1).
  */
 @Entity
 @Table(name = "service_requests")
@@ -40,7 +40,7 @@ public class ServiceRequest {
     @Column(name = "category_id", nullable = false)
     private UUID categoryId;
 
-    /** Catégorie saisie par le client quand il a choisi « Autre » (migration V4). */
+    /** Catégorie saisie par le client quand il a choisi « Autre » (V4). */
     @Column(name = "category_other")
     private String categoryOther;
 
@@ -50,14 +50,40 @@ public class ServiceRequest {
     @Column(nullable = false, columnDefinition = "text")
     private String description;
 
-    @Column(name = "address_line", nullable = false)
-    private String addressLine;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RequestTiming timing;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Urgency urgency;
+
+    @Column(name = "preferred_date")
+    private LocalDate preferredDate;
+
+    @Column(name = "preferred_time")
+    private LocalTime preferredTime;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "preferred_time_slot", nullable = false)
+    private TimeSlot preferredTimeSlot;
 
     @Column(name = "governorate_id", nullable = false)
     private UUID governorateId;
 
-    @Column(name = "preferred_date")
-    private LocalDate preferredDate;
+    @Column(name = "address_line", nullable = false)
+    private String addressLine;
+
+    /** Repère pour trouver l'adresse (V5). */
+    @Column(name = "address_note")
+    private String addressNote;
+
+    /** Position du client (« Utiliser ma position actuelle »), optionnelle. */
+    @Column(name = "lat")
+    private Double latitude;
+
+    @Column(name = "lng")
+    private Double longitude;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -73,19 +99,25 @@ public class ServiceRequest {
         // requis par JPA
     }
 
-    public static ServiceRequest submit(UUID customerId, UUID professionalId, UUID categoryId,
-            String categoryOther, String title, String description, String addressLine, UUID governorateId,
-            LocalDate preferredDate) {
+    /** Nouvelle demande au statut SUBMITTED (« En attente »). */
+    public static ServiceRequest submit(NewServiceRequest draft) {
         ServiceRequest request = new ServiceRequest();
-        request.customerId = customerId;
-        request.professionalId = professionalId;
-        request.categoryId = categoryId;
-        request.categoryOther = categoryOther;
-        request.title = title;
-        request.description = description;
-        request.addressLine = addressLine;
-        request.governorateId = governorateId;
-        request.preferredDate = preferredDate;
+        request.customerId = draft.customerId();
+        request.professionalId = draft.professionalId();
+        request.categoryId = draft.categoryId();
+        request.categoryOther = draft.categoryOther();
+        request.title = draft.title();
+        request.description = draft.description();
+        request.timing = draft.timing();
+        request.urgency = draft.timing() == RequestTiming.URGENT ? Urgency.URGENT : Urgency.NORMAL;
+        request.preferredDate = draft.preferredDate();
+        request.preferredTime = draft.preferredTime();
+        request.preferredTimeSlot = TimeSlot.of(draft.preferredTime());
+        request.governorateId = draft.governorateId();
+        request.addressLine = draft.addressLine();
+        request.addressNote = draft.addressNote();
+        request.latitude = draft.latitude();
+        request.longitude = draft.longitude();
         request.status = ServiceRequestStatus.SUBMITTED;
         return request;
     }
@@ -130,16 +162,44 @@ public class ServiceRequest {
         return description;
     }
 
-    public String getAddressLine() {
-        return addressLine;
+    public RequestTiming getTiming() {
+        return timing;
+    }
+
+    public Urgency getUrgency() {
+        return urgency;
+    }
+
+    public LocalDate getPreferredDate() {
+        return preferredDate;
+    }
+
+    public LocalTime getPreferredTime() {
+        return preferredTime;
+    }
+
+    public TimeSlot getPreferredTimeSlot() {
+        return preferredTimeSlot;
     }
 
     public UUID getGovernorateId() {
         return governorateId;
     }
 
-    public LocalDate getPreferredDate() {
-        return preferredDate;
+    public String getAddressLine() {
+        return addressLine;
+    }
+
+    public String getAddressNote() {
+        return addressNote;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
     }
 
     public ServiceRequestStatus getStatus() {

@@ -61,10 +61,12 @@ public class SecurityConfig {
                 // Endpoints publics (US03, US04, US05 et configuration du frontend)
                 .requestMatchers(HttpMethod.GET, "/api/public-config", "/api/categories", "/api/governorates",
                         "/api/providers", "/api/providers/**").permitAll()
-                // US06 : la liste des prestataires du formulaire est visible sans compte…
-                .requestMatchers(HttpMethod.GET, "/api/service-requests/eligible-professionals").permitAll()
+                // US06 : le formulaire (prestataire choisi) est visible sans compte…
+                .requestMatchers(HttpMethod.GET, "/api/service-requests/target/**").permitAll()
                 // … mais seul un client connecté peut envoyer une demande
                 .requestMatchers(HttpMethod.POST, "/api/service-requests").hasRole("CUSTOMER")
+                // Demandes reçues : tableau de bord du prestataire
+                .requestMatchers(HttpMethod.GET, "/api/service-requests/received").hasRole("PROFESSIONAL")
                 .anyRequest().authenticated())
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter))

@@ -1,57 +1,64 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
-/** Prestataire pouvant recevoir une demande (EligibleProfessionalResponse.java). */
-export interface EligibleProfessional {
+/** Délai souhaité (RequestTiming.java). */
+export type RequestTiming = 'URGENT' | 'TODAY' | 'WITHIN_48H' | 'SCHEDULED';
+
+/** Prestataire choisi, en tête du formulaire (RequestTargetResponse.java). */
+export interface RequestTarget {
   id: string;
   displayName: string;
   governorateName: string | null;
-  avgRating: number;
-  reviewCount: number;
-  verified: boolean;
+  acceptingRequests: boolean;
+  services: { id: string; name: string }[];
 }
 
 /** Corps de POST /api/service-requests (CreateServiceRequestRequest.java). */
 export interface CreateServiceRequest {
+  professionalId: string;
   /** null quand le client choisit « Autre ». */
   categoryId: string | null;
-  /** Catégorie précisée par le client quand il choisit « Autre ». */
   otherCategory: string | null;
   title: string;
   description: string;
+  timing: RequestTiming;
+  /** AAAA-MM-JJ, uniquement pour SCHEDULED. */
+  preferredDate: string | null;
+  /** HH:mm, optionnel, uniquement pour SCHEDULED. */
+  preferredTime: string | null;
   governorateId: string;
   addressLine: string;
-  /** AAAA-MM-JJ, ou null. */
-  preferredDate: string | null;
-  professionalId: string;
+  addressNote: string | null;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 /** Demande créée (ServiceRequestResponse.java). */
 export interface ServiceRequest {
   id: string;
   title: string;
-  description: string;
-  addressLine: string;
+  categoryName: string;
+  timing: RequestTiming;
+  timingLabel: string;
   preferredDate: string | null;
+  preferredTime: string | null;
+  addressLine: string;
+  addressNote: string | null;
   status: string;
   /** Libellé lisible, ex. « En attente ». */
   statusLabel: string;
-  categoryId: string;
-  categoryName: string;
-  otherCategory: string | null;
-  governorateId: string;
-  professionalId: string;
   professionalName: string;
   createdAt: string;
 }
 
 /** Limites identiques aux validations du backend. */
 export const REQUEST_LIMITS = {
-  titleMax: 120,
+  titleMax: 80,
   descriptionMin: 10,
   descriptionMax: 1000,
   addressMax: 255,
+  addressNoteMax: 200,
   otherCategoryMin: 2,
   otherCategoryMax: 80,
 } as const;
@@ -60,17 +67,9 @@ export const REQUEST_LIMITS = {
 export class ServiceRequestService {
   private readonly http = inject(HttpClient);
 
-  /** categoryId null = catégorie « Autre » : tous les prestataires disponibles. */
-  findEligibleProfessionals(
-    categoryId: string | null,
-    governorateId: string | null,
-    query: string,
-  ): Observable<EligibleProfessional[]> {
-    let params = new HttpParams();
-    if (categoryId) params = params.set('categoryId', categoryId);
-    if (governorateId) params = params.set('governorateId', governorateId);
-    if (query.trim()) params = params.set('q', query.trim());
-    return this.http.get<EligibleProfessional[]>('/api/service-requests/eligible-professionals', { params });
+  /** Prestataire et ses services (public : le visiteur voit le formulaire avant de se connecter). */
+  getTarget(professionalId: string): Observable<RequestTarget> {
+    return this.http.get<RequestTarget>(`/api/service-requests/target/${encodeURIComponent(professionalId)}`);
   }
 
   create(request: CreateServiceRequest): Observable<ServiceRequest> {

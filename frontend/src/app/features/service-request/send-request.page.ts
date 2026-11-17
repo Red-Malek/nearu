@@ -1,79 +1,106 @@
-import { Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, PLATFORM_ID, computed, inject, input, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { catchError, combineLatest, debounceTime, distinctUntilChanged, forkJoin, map, of, startWith, switchMap, tap } from 'rxjs';
+import { startWith } from 'rxjs';
 import { toApiError } from '../../core/api-error';
 import { AuthService } from '../../core/auth/auth.service';
-import { Category, CategoryService } from '../../core/category.service';
 import { Governorate, GovernorateService } from '../../core/governorate.service';
 import {
-  EligibleProfessional,
   REQUEST_LIMITS,
+  RequestTarget,
+  RequestTiming,
   ServiceRequest,
   ServiceRequestService,
 } from '../../core/service-request.service';
+import { LogoComponent } from '../../shared/logo/logo.component';
 
-/** Valeur de l'option « Autre » dans la liste des catégories. */
-export const OTHER_CATEGORY = 'autre';
+/** Valeur de l'option « Autre » dans la liste des services. */
+const OTHER = 'autre';
+const DRAFT_KEY = 'nearu.requestDraft.';
 
-type RequestField =
+type Field =
   | 'categoryId'
   | 'otherCategory'
   | 'title'
   | 'description'
+  | 'preferredDate'
   | 'governorateId'
   | 'addressLine'
-  | 'preferredDate'
-  | 'professionalId';
+  | 'addressNote';
 
-/** Date du jour au format AAAA-MM-JJ (fuseau local), pour le champ « Date souhaitée ». */
+/** Messages d'erreur de la maquette, champ par champ. */
+const MESSAGES: Record<Field, string> = {
+  categoryId: 'Choisissez le service concerné.',
+  otherCategory: 'Précisez le service concerné (2 caractères minimum).',
+  title: 'Donnez un titre court à votre demande.',
+  description: 'Décrivez le problème en quelques mots (10 caractères minimum).',
+  preferredDate: 'Choisissez une date.',
+  governorateId: 'Choisissez votre gouvernorat.',
+  addressLine: 'Indiquez l’adresse de l’intervention.',
+  addressNote: 'Le repère ne doit pas dépasser 200 caractères.',
+};
+
+interface TimingChoice {
+  value: RequestTiming;
+  label: string;
+  hint: string;
+}
+
+/** Date du jour au format AAAA-MM-JJ (fuseau local). */
 function todayIso(): string {
   const now = new Date();
-  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
-  return local.toISOString().slice(0, 10);
+  return new Date(now.getTime() - now.getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
 }
 
 /**
- * Écran « Envoyer une demande » (US06). Visible par un visiteur, qui est invité à se connecter
- * pour l'envoyer ; l'envoi est réservé aux clients.
+ * Écran « Envoyer une demande » (US06). Le client arrive ici depuis le profil d'un prestataire
+ * (/demandes/nouvelle?professionalId=…) : la demande part uniquement à ce prestataire, qui la
+ * retrouve dans la section « Demandes » de son tableau de bord (GET /api/service-requests/received).
  */
 @Component({
   selector: 'app-send-request-page',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, LogoComponent],
   templateUrl: './send-request.page.html',
-  styleUrl: './send-request.page.scss',
+  styleUrls: ['./send-request.page.scss', './send-request.states.scss'],
 })
 export class SendRequestPage implements OnInit {
   private readonly api = inject(ServiceRequestService);
-  private readonly categoryService = inject(CategoryService);
   private readonly governorateService = inject(GovernorateService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly fb = inject(NonNullableFormBuilder);
   private readonly router = inject(Router);
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly fb = inject(NonNullableFormBuilder);
 
-  /** Vrai si un client est connecté ; sinon le visiteur est invité à se connecter (US06 critère 3). */
+  /** Prestataire choisi, transmis par le bouton « Envoyer une demande » de son profil. */
+  readonly professionalId = input<string | undefined>();
+
+  /** Un client connecté peut envoyer ; un visiteur est invité à se connecter (US06, critère 3). */
   readonly isLoggedIn = inject(AuthService).isLoggedIn;
 
-  /** Pré-remplissage depuis l'URL, ex. bouton « Envoyer une demande » du profil public (US05). */
-  readonly professionalId = input<string | undefined>();
-  readonly categoryId = input<string | undefined>();
-
   readonly limits = REQUEST_LIMITS;
-  readonly otherValue = OTHER_CATEGORY;
+  readonly other = OTHER;
   readonly today = todayIso();
+  readonly timings: TimingChoice[] = [
+    { value: 'URGENT', label: 'Urgent', hint: 'dans l’heure' },
+    { value: 'TODAY', label: 'Aujourd’hui', hint: 'dans la journée' },
+    { value: 'WITHIN_48H', label: 'Sous 48 h', hint: 'd’ici 2 jours' },
+    { value: 'SCHEDULED', label: 'Choisir', hint: 'date et heure' },
+  ];
 
-  readonly categories = signal<Category[]>([]);
+  readonly target = signal<RequestTarget | null>(null);
+  /** loading → chargement ; ready → formulaire ; missing → aucun prestataire choisi ; error → erreur. */
+  readonly state = signal<'loading' | 'ready' | 'missing' | 'error'>('loading');
+  readonly loadError = signal<string | null>(null);
   readonly governorates = signal<Governorate[]>([]);
-  readonly optionsLoaded = signal(false);
-  readonly optionsError = signal<string | null>(null);
-  readonly professionals = signal<EligibleProfessional[]>([]);
-  readonly professionalsLoading = signal(false);
-  readonly professionalsError = signal<string | null>(null);
   readonly submitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly created = signal<ServiceRequest | null>(null);
+  readonly recap = signal<{ label: string; value: string }[]>([]);
+  readonly position = signal<{ latitude: number; longitude: number } | null>(null);
+  readonly geoHint = signal<{ text: string; tone: 'ok' | 'muted' | 'err' } | null>(null);
 
   readonly form = this.fb.group({
     categoryId: ['', Validators.required],
@@ -87,183 +114,173 @@ export class SendRequestPage implements OnInit {
         Validators.maxLength(REQUEST_LIMITS.descriptionMax),
       ],
     ],
+    timing: ['URGENT' as RequestTiming],
+    preferredDate: [''],
+    preferredTime: [''],
     governorateId: ['', Validators.required],
     addressLine: ['', [Validators.required, Validators.maxLength(REQUEST_LIMITS.addressMax)]],
-    preferredDate: [''],
-    professionalId: ['', Validators.required],
+    addressNote: ['', Validators.maxLength(REQUEST_LIMITS.addressNoteMax)],
   });
 
-  readonly professionalSearch = this.fb.control('');
-
-  private readonly descriptionValue = toSignal(this.form.controls.description.valueChanges, {
-    initialValue: '',
-  });
+  private readonly descriptionValue = toSignal(this.form.controls.description.valueChanges, { initialValue: '' });
   readonly descriptionLength = computed(() => this.descriptionValue().length);
+  private readonly timingValue = toSignal(this.form.controls.timing.valueChanges, { initialValue: 'URGENT' });
+  readonly isScheduled = computed(() => this.timingValue() === 'SCHEDULED');
+  private readonly categoryValue = toSignal(this.form.controls.categoryId.valueChanges, { initialValue: '' });
+  readonly isOther = computed(() => this.categoryValue() === OTHER);
 
-  private readonly categoryValue = toSignal(this.form.controls.categoryId.valueChanges, {
-    initialValue: '',
+  readonly firstName = computed(() => this.target()?.displayName.split(/\s+/)[0] ?? '');
+  readonly initials = computed(() =>
+    (this.target()?.displayName ?? '')
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((word) => word[0].toUpperCase())
+      .join(''),
+  );
+  /** « Plombier · La Marsa, Tunis » dans la maquette : services et zone du prestataire. */
+  readonly targetDetails = computed(() => {
+    const target = this.target();
+    if (!target) return '';
+    const services = target.services.map((s) => s.name).join(', ') || 'Prestataire';
+    return target.governorateName ? `${services} · ${target.governorateName}` : services;
   });
-  readonly hasCategory = computed(() => this.categoryValue() !== '');
-  readonly isOtherCategory = computed(() => this.categoryValue() === OTHER_CATEGORY);
 
   ngOnInit(): void {
-    this.form.patchValue({
-      categoryId: this.categoryId() ?? '',
-      professionalId: this.professionalId() ?? '',
-    });
-    this.watchOtherCategory();
-    this.loadOptions();
-    this.watchProfessionals();
-  }
-
-  /** Catégories (US03) et gouvernorats (US04), via les services existants de l'équipe. */
-  loadOptions(): void {
-    this.optionsError.set(null);
-    forkJoin({ categories: this.categoryService.list(), governorates: this.governorateService.list() })
+    this.watchConditionalFields();
+    const id = this.professionalId();
+    if (!id) {
+      this.state.set('missing');
+      return;
+    }
+    this.loadTarget(id);
+    this.governorateService
+      .list()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ categories, governorates }) => {
-          this.categories.set(categories);
-          this.governorates.set(governorates);
-          this.optionsLoaded.set(true);
+        next: (list) => this.governorates.set(list),
+        error: (error) => this.loadError.set(toApiError(error).message),
+      });
+  }
+
+  private loadTarget(id: string): void {
+    this.api
+      .getTarget(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (target) => {
+          this.target.set(target);
+          this.state.set('ready');
+          this.restoreDraft(target.id);
         },
-        error: (error) => this.optionsError.set(toApiError(error).message),
+        error: (error) => {
+          this.loadError.set(toApiError(error).message);
+          this.state.set('error');
+        },
       });
   }
 
-  /** Le champ « Précisez votre catégorie » n'est obligatoire que pour « Autre ». */
-  private watchOtherCategory(): void {
-    const { categoryId, otherCategory } = this.form.controls;
-    categoryId.valueChanges
-      .pipe(startWith(categoryId.value), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value) => {
-        if (value === OTHER_CATEGORY) {
-          otherCategory.setValidators([
-            Validators.required,
-            Validators.minLength(REQUEST_LIMITS.otherCategoryMin),
-            Validators.maxLength(REQUEST_LIMITS.otherCategoryMax),
-          ]);
-        } else {
-          otherCategory.clearValidators();
-          otherCategory.setValue('', { emitEvent: false });
-        }
-        otherCategory.updateValueAndValidity({ emitEvent: false });
-      });
+  /** « Précisez » obligatoire pour « Autre » ; date obligatoire pour « Choisir date et heure ». */
+  private watchConditionalFields(): void {
+    const c = this.form.controls;
+    c.categoryId.valueChanges.pipe(startWith(c.categoryId.value), takeUntilDestroyed(this.destroyRef)).subscribe((v) => {
+      c.otherCategory.setValidators(
+        v === OTHER
+          ? [
+              Validators.required,
+              Validators.minLength(REQUEST_LIMITS.otherCategoryMin),
+              Validators.maxLength(REQUEST_LIMITS.otherCategoryMax),
+            ]
+          : [],
+      );
+      c.otherCategory.updateValueAndValidity({ emitEvent: false });
+    });
+    c.timing.valueChanges.pipe(startWith(c.timing.value), takeUntilDestroyed(this.destroyRef)).subscribe((v) => {
+      c.preferredDate.setValidators(v === 'SCHEDULED' ? [Validators.required] : []);
+      c.preferredDate.updateValueAndValidity({ emitEvent: false });
+    });
   }
 
-  /** Recharge les prestataires quand la catégorie, le gouvernorat ou la recherche change. */
-  private watchProfessionals(): void {
-    const controls = this.form.controls;
-    combineLatest([
-      controls.categoryId.valueChanges.pipe(startWith(controls.categoryId.value)),
-      controls.governorateId.valueChanges.pipe(startWith(controls.governorateId.value)),
-      this.professionalSearch.valueChanges.pipe(
-        startWith(''),
-        debounceTime(300),
-        map((query) => query.trim()),
-        distinctUntilChanged(),
-      ),
-    ])
-      .pipe(
-        tap(() => this.professionalsError.set(null)),
-        switchMap(([categoryId, governorateId, query]) => {
-          if (!categoryId) {
-            return of({ categoryId, query, list: [] as EligibleProfessional[] });
-          }
-          this.professionalsLoading.set(true);
-          const apiCategory = categoryId === OTHER_CATEGORY ? null : categoryId;
-          return this.api.findEligibleProfessionals(apiCategory, governorateId || null, query).pipe(
-            map((list) => ({ categoryId, query, list })),
-            catchError((error) => {
-              this.professionalsError.set(toApiError(error).message);
-              return of({ categoryId, query, list: [] as EligibleProfessional[] });
-            }),
-          );
-        }),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(({ categoryId, query, list }) => {
-        this.professionalsLoading.set(false);
-        this.professionals.set(list);
-        // Un prestataire qui n'est plus éligible (autre catégorie / gouvernorat) est désélectionné.
-        const selected = controls.professionalId.value;
-        if (categoryId && selected && !query && !list.some((p) => p.id === selected)) {
-          controls.professionalId.setValue('');
-        }
-      });
-  }
-
-  selectProfessional(id: string): void {
-    this.form.controls.professionalId.setValue(id);
-    this.form.controls.professionalId.markAsTouched();
-  }
-
-  /** Message d'erreur à afficher sous un champ, ou null. */
-  fieldError(field: RequestField): string | null {
+  /** Message sous un champ quand il est invalide et a été touché (ou après un envoi). */
+  fieldError(field: Field): string | null {
     const control = this.form.controls[field];
-    if (!control.invalid || !(control.touched || control.dirty)) {
-      return null;
-    }
-    const errors = control.errors ?? {};
-    if (errors['server']) return errors['server'] as string;
-    if (errors['required']) return this.requiredMessage(field);
-    if (errors['minlength']) {
-      return `Au moins ${(errors['minlength'] as { requiredLength: number }).requiredLength} caractères.`;
-    }
-    if (errors['maxlength']) {
-      return `${(errors['maxlength'] as { requiredLength: number }).requiredLength} caractères maximum.`;
-    }
-    return 'Valeur invalide.';
+    if (!control.invalid || !control.touched) return null;
+    const server = control.errors?.['server'];
+    return typeof server === 'string' ? server : MESSAGES[field];
   }
 
-  /** Envoie le visiteur vers la connexion, puis le ramène sur ce formulaire. */
-  goToLogin(): void {
-    void this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+  /** « Utiliser ma position actuelle ». */
+  useMyPosition(): void {
+    if (!this.isBrowser || !navigator.geolocation) {
+      this.geoHint.set({ text: 'La localisation n’est pas disponible sur cet appareil.', tone: 'err' });
+      return;
+    }
+    this.geoHint.set({ text: 'Localisation en cours…', tone: 'muted' });
+    navigator.geolocation.getCurrentPosition(
+      (p) => {
+        this.position.set({ latitude: p.coords.latitude, longitude: p.coords.longitude });
+        this.geoHint.set({ text: 'Position enregistrée. Ajoutez le gouvernorat et l’adresse exacte.', tone: 'ok' });
+      },
+      () => {
+        this.position.set(null);
+        this.geoHint.set({ text: 'Position refusée. Saisissez votre adresse ci-dessous.', tone: 'err' });
+      },
+      { timeout: 8000 },
+    );
   }
 
   submit(): void {
     this.errorMessage.set(null);
+    const target = this.target();
+    if (!target) return;
     if (!this.isLoggedIn()) {
       this.goToLogin();
       return;
     }
+    const v = this.form.getRawValue();
+    if (v.timing === 'SCHEDULED' && v.preferredDate && v.preferredDate < this.today) {
+      this.form.controls.preferredDate.setErrors({ server: 'La date ne peut pas être dans le passé.' });
+    }
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.errorMessage.set('Certains champs sont manquants ou invalides.');
-      return;
-    }
-    const value = this.form.getRawValue();
-    if (value.preferredDate && value.preferredDate < this.today) {
-      this.form.controls.preferredDate.setErrors({ server: 'La date ne peut pas être dans le passé.' });
-      this.form.controls.preferredDate.markAsTouched();
+      this.focusFirstInvalid();
       return;
     }
 
-    const isOther = value.categoryId === OTHER_CATEGORY;
+    const isOther = v.categoryId === OTHER;
+    const scheduled = v.timing === 'SCHEDULED';
+    const position = this.position();
     this.submitting.set(true);
     this.api
       .create({
-        categoryId: isOther ? null : value.categoryId,
-        otherCategory: isOther ? value.otherCategory.trim() : null,
-        title: value.title.trim(),
-        description: value.description.trim(),
-        governorateId: value.governorateId,
-        addressLine: value.addressLine.trim(),
-        preferredDate: value.preferredDate || null,
-        professionalId: value.professionalId,
+        professionalId: target.id,
+        categoryId: isOther ? null : v.categoryId,
+        otherCategory: isOther ? v.otherCategory.trim() : null,
+        title: v.title.trim(),
+        description: v.description.trim(),
+        timing: v.timing,
+        preferredDate: scheduled ? v.preferredDate : null,
+        preferredTime: scheduled && v.preferredTime ? v.preferredTime : null,
+        governorateId: v.governorateId,
+        addressLine: v.addressLine.trim(),
+        addressNote: v.addressNote.trim() || null,
+        latitude: position?.latitude ?? null,
+        longitude: position?.longitude ?? null,
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (request) => {
           this.submitting.set(false);
+          this.recap.set(this.buildRecap(request, v.governorateId));
           this.created.set(request);
+          if (this.isBrowser) window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         error: (error) => {
           this.submitting.set(false);
           const apiError = toApiError(error);
           this.errorMessage.set(apiError.message);
           for (const [field, message] of Object.entries(apiError.fieldErrors)) {
-            const control = this.form.get(field);
+            const control = this.form.get(field === 'professionalId' ? 'categoryId' : field);
             control?.setErrors({ server: message });
             control?.markAsTouched();
           }
@@ -271,26 +288,55 @@ export class SendRequestPage implements OnInit {
       });
   }
 
-  /** Repart d'un formulaire vide pour une nouvelle demande. */
-  startNew(): void {
+  /** Nouvelle demande au même prestataire. */
+  startAgain(): void {
     this.created.set(null);
     this.errorMessage.set(null);
+    this.position.set(null);
+    this.geoHint.set(null);
     this.form.reset();
-    this.professionalSearch.setValue('');
   }
 
-  private requiredMessage(field: RequestField): string {
-    switch (field) {
-      case 'categoryId':
-        return 'Choisissez une catégorie.';
-      case 'otherCategory':
-        return 'Précisez la catégorie de service souhaitée.';
-      case 'governorateId':
-        return 'Choisissez votre gouvernorat.';
-      case 'professionalId':
-        return 'Choisissez le prestataire à qui envoyer votre demande.';
-      default:
-        return 'Ce champ est obligatoire.';
+  /** Garde la saisie pendant la connexion, puis revient sur ce formulaire. */
+  goToLogin(): void {
+    const target = this.target();
+    if (this.isBrowser && target) {
+      sessionStorage.setItem(DRAFT_KEY + target.id, JSON.stringify(this.form.getRawValue()));
     }
+    void this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+  }
+
+  private restoreDraft(professionalId: string): void {
+    if (!this.isBrowser) return;
+    const saved = sessionStorage.getItem(DRAFT_KEY + professionalId);
+    if (!saved) return;
+    sessionStorage.removeItem(DRAFT_KEY + professionalId);
+    try {
+      this.form.patchValue(JSON.parse(saved));
+    } catch {
+      // brouillon illisible : on repart d'un formulaire vide
+    }
+  }
+
+  private buildRecap(request: ServiceRequest, governorateId: string): { label: string; value: string }[] {
+    const governorate = this.governorates().find((g) => g.id === governorateId)?.name ?? '';
+    let delay = request.timingLabel;
+    if (request.timing === 'SCHEDULED' && request.preferredDate) {
+      const [y, m, d] = request.preferredDate.split('-');
+      delay = `${d}/${m}/${y}` + (request.preferredTime ? ` à ${request.preferredTime.slice(0, 5)}` : '');
+    }
+    return [
+      { label: 'Prestataire', value: request.professionalName },
+      { label: 'Service', value: request.categoryName },
+      { label: 'Demande', value: request.title },
+      { label: 'Délai', value: delay },
+      { label: 'Lieu', value: governorate ? `${request.addressLine}, ${governorate}` : request.addressLine },
+      { label: 'Statut', value: request.statusLabel },
+    ];
+  }
+
+  private focusFirstInvalid(): void {
+    if (!this.isBrowser) return;
+    setTimeout(() => document.querySelector<HTMLElement>('.request-page .bad input, .request-page .bad select, .request-page .bad textarea')?.focus());
   }
 }

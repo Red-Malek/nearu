@@ -44,8 +44,10 @@ export const routes: Routes = [
   {
     path: 'demandes/nouvelle',
     title: 'Envoyer une demande · NearU',
-    // US06 : un visiteur voit le formulaire mais doit se connecter pour l'envoyer
+    // US06 : ouvert depuis le profil d'un prestataire (?professionalId=…). Un visiteur voit le
+    // formulaire mais doit se connecter pour l'envoyer. Écran plein (en-tête propre à la maquette).
     canActivate: [guestOrRoleGuard('CUSTOMER')],
+    data: { fullscreen: true },
     loadComponent: () =>
       import('./features/service-request/send-request.page').then((m) => m.SendRequestPage),
   },
