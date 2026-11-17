@@ -1,0 +1,54 @@
+<header class="page-heading">
+    <p class="breadcrumb">Mon compte / Profil et paramètres</p>
+
+    <h1>Mon <span>compte</span></h1>
+
+    <p class="description">
+        Gérez votre profil, vos préférences et la façon dont NearU
+        vous aide à trouver des pros près de chez vous.
+    </p>
+</header>
+
+<div class="account-layout">
+    <aside class="sidebar">
+        <h2>Paramètres</h2>
+
+       <nav class="sidebar-menu">
+    <a routerLink="/account" routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: true }">
+        <svg lucideUserRound></svg>
+        Profil
+    </a>
+
+    <a routerLink="/account/location" routerLinkActive="active">
+        <svg lucideMapPin></svg>
+        Localisation
+    </a>
+
+    <!--<a routerLink="/account/favorites" routerLinkActive="active">
+        <svg lucideHeart></svg>
+        Favoris
+    </a>-->
+
+    <a routerLink="/account/history" routerLinkActive="active">
+        <svg lucideHistory></svg>
+        Historique
+    </a>
+
+   <!--<a routerLink="/account/notifications" routerLinkActive="active">
+        <svg lucideBell></svg>
+        Notifications
+    </a>-->
+
+    <a routerLink="/account/security" routerLinkActive="active" style="color:red">
+        <svg lucideLockKeyhole></svg>
+        Sécurité
+    </a>
+    
+</nav>
+    </aside>
+
+    <main class="page-content">
+        <router-outlet></router-outlet>
+    </main>
+</div>

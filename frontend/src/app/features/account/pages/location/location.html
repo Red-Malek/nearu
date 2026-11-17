@@ -1,0 +1,92 @@
+
+<div class="location-card">
+
+    <h2>Localisation</h2>
+
+    <p class="card-description">
+        NearU s'appuie sur votre zone pour afficher les commerces
+        et prestataires les plus proches.
+    </p>
+
+    <div class="location-form">
+
+        <!-- Adresse -->
+        <div class="form-group">
+            <label for="address">Adresse</label>
+            <input
+                type="text"
+                id="address"
+                [(ngModel)]="address"
+                placeholder="Entrez votre adresse">
+        </div>
+
+        <!-- Code postal et ville -->
+        <div class="form-row">
+
+            <div class="form-group">
+                <label for="postalCode">Code postal</label>
+                <input
+                    type="text"
+                    id="postalCode"
+                    [(ngModel)]="postalCode"
+                    placeholder="8000">
+            </div>
+
+            <div class="form-group">
+                <label for="city">Ville</label>
+                <input
+                    type="text"
+                    id="city"
+                    [(ngModel)]="city"
+                    placeholder="Nabeul">
+            </div>
+
+        </div>
+
+        <!-- Rayon de recherche -->
+        <div class="form-group">
+            <label for="radius">Rayon de recherche par défaut</label>
+
+            <select id="radius" [(ngModel)]="searchRadius">
+                <option [ngValue]="1">1 km</option>
+                <option [ngValue]="3">3 km</option>
+                <option [ngValue]="5">5 km</option>
+                <option [ngValue]="10">10 km</option>
+                <option [ngValue]="20">20 km</option>
+            </select>
+
+            <small>
+                Vous pourrez toujours l'élargir lors d'une recherche.
+            </small>
+        </div>
+
+        <!-- Position GPS -->
+        <div class="setting-row">
+            <div>
+                <h3>Utiliser ma position GPS</h3>
+                <p>Afficher les résultats en fonction de votre position en temps réel.</p>
+            </div>
+
+            <label class="toggle">
+    <input type="checkbox" [(ngModel)]="useGps">
+    <span class="slider"></span>
+</label>
+        </div>
+
+        <!-- Confidentialité -->
+        <div class="setting-row">
+            <div>
+                <h3>Masquer mon adresse exacte</h3>
+                <p>Seule la ville est partagée avec les professionnels que vous contactez.</p>
+            </div>
+
+            <label class="toggle">
+    <input type="checkbox" [(ngModel)]="hideExactAddress">
+    <span class="slider"></span>
+</label>
+        </div>
+<button type="button" class="save-button" (click)="saveLocation()">
+    Enregistrer les modifications
+</button>
+    </div>
+</div>
