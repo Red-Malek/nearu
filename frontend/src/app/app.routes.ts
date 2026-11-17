@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { guestGuard, guestOrRoleGuard } from './core/auth/auth.guards';
+import { guestGuard, guestOrRoleGuard, roleGuard } from './core/auth/auth.guards';
 
 /** data.fullscreen : page affichée sans la barre de navigation ni le pied de page (écrans de connexion). */
 export const routes: Routes = [
@@ -50,6 +50,20 @@ export const routes: Routes = [
     data: { fullscreen: true },
     loadComponent: () =>
       import('./features/service-request/send-request.page').then((m) => m.SendRequestPage),
+  },
+  // US02 : espace prestataire (paramètres du commerce, dashboard)
+  { path: 'espace-prestataire', redirectTo: 'mon-commerce/parametres', pathMatch: 'full' },
+  {
+    path: 'mon-commerce/parametres',
+    title: 'Paramètres du commerce · NearU',
+    canActivate: [roleGuard('PROFESSIONAL')],
+    loadComponent: () => import('./features/settings/settings.page').then((m) => m.SettingsPage),
+  },
+  {
+    path: 'mon-commerce/dashboard',
+    title: 'Dashboard · NearU',
+    canActivate: [roleGuard('PROFESSIONAL')],
+    loadComponent: () => import('./features/spaces/space.page').then((m) => m.SpacePage),
   },
   { path: '**', redirectTo: '' },
 ];

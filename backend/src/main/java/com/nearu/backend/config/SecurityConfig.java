@@ -67,6 +67,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/service-requests").hasRole("CUSTOMER")
                 // Demandes reçues : tableau de bord du prestataire
                 .requestMatchers(HttpMethod.GET, "/api/service-requests/received").hasRole("PROFESSIONAL")
+                // US02 : paramètres du commerce du prestataire connecté
+                .requestMatchers("/api/professional/**").hasRole("PROFESSIONAL")
                 .anyRequest().authenticated())
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter))
