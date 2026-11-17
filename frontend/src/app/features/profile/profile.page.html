@@ -1,0 +1,59 @@
+<section class="profile-page section-wrap">
+  <a class="back" routerLink="/prestataires">← Retour aux résultats</a>
+
+  @switch (status()) {
+    @case ('loading') {
+      <p class="message">Chargement du profil…</p>
+    }
+    @case ('not-found') {
+      <div class="message message-error" role="alert">
+        <h1>Ce profil n’existe pas</h1>
+        <p>Ce prestataire est introuvable ou n’est plus disponible sur NearU.</p>
+        <a class="button-link" routerLink="/prestataires">Voir les prestataires</a>
+      </div>
+    }
+    @case ('error') {
+      <p class="message message-error" role="alert">
+        Le profil est momentanément indisponible. Veuillez réessayer.
+      </p>
+    }
+    @default {
+      @if (profile(); as p) {
+        <header class="hero">
+          <span class="avatar" aria-hidden="true">{{ initials(p.name) }}</span>
+          <div>
+            <h1>{{ p.name }}</h1>
+            <p class="trades">{{ p.services.join(' · ') }}</p>
+            @if (p.city) {
+              <p class="city"><span aria-hidden="true">⌖</span> {{ p.city }}</p>
+            }
+          </div>
+          <button type="button" class="request">Envoyer une demande</button>
+        </header>
+
+        <h2>À <em>propos</em></h2>
+        <p class="bio">{{ p.bio || 'Ce prestataire n’a pas encore ajouté de description.' }}</p>
+
+        <h2>Services <em>proposés</em></h2>
+        @if (p.services.length > 0) {
+          <ul class="chips">
+            @for (s of p.services; track s) {
+              <li>{{ s }}</li>
+            }
+          </ul>
+        } @else {
+          <p class="bio">Aucun service renseigné pour le moment.</p>
+        }
+
+        <h2>Zone d’<em>intervention</em></h2>
+        <p class="bio">
+          @if (p.city) {
+            {{ p.city }} et ses alentours, dans un rayon de {{ p.serviceRadiusKm }} km.
+          } @else {
+            Rayon d’intervention : {{ p.serviceRadiusKm }} km.
+          }
+        </p>
+      }
+    }
+  }
+</section>

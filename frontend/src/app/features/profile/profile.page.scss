@@ -1,0 +1,158 @@
+// Agreed palette (navy / orange), scoped to this page.
+:host {
+  --navy: #0b2343;
+  --orange: #ff7417;
+  --field: #e8edf7;
+  display: block;
+  padding-bottom: 64px;
+}
+
+.back {
+  display: inline-block;
+  margin: 32px 0 20px;
+  color: #5b6577;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+h1 {
+  margin: 0 0 6px;
+  color: var(--navy);
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.15;
+}
+
+h2 {
+  margin: 36px 0 12px;
+  color: var(--navy);
+  font-size: 24px;
+
+  em {
+    color: var(--orange);
+    font-style: normal;
+  }
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 28px;
+  border: 1px solid #e3e8f0;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 12px 36px #0b234312;
+
+  div {
+    flex: 1;
+    min-width: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.avatar {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--orange);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.trades {
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.city {
+  margin-top: 6px !important;
+  color: #5b6577;
+  font-size: 14px;
+}
+
+.request {
+  flex: none;
+  height: 46px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--orange);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bio {
+  margin: 0;
+  color: #3d4859;
+  line-height: 1.6;
+}
+
+.chips {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  li {
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: var(--field);
+    color: var(--navy);
+    font-size: 14px;
+  }
+}
+
+.message {
+  margin: 16px 0 0;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: var(--field);
+  color: var(--navy);
+
+  h1 {
+    font-size: 26px;
+  }
+
+  p {
+    margin: 0 0 14px;
+  }
+}
+
+.message-error {
+  background: #fdecea;
+  color: #8a1f11;
+
+  h1 {
+    color: #8a1f11;
+  }
+}
+
+.button-link {
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+@media (max-width: 650px) {
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

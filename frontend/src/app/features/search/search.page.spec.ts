@@ -34,6 +34,18 @@ describe('SearchPage', () => {
     expect(text).toContain('1 résultat');
   });
 
+  it('links each result to the public profile', async () => {
+    const fixture = await render();
+    http
+      .expectOne((r) => r.url === '/api/providers')
+      .flush([{ id: 'abc-123', name: 'Ahmed Trabelsi', city: 'Ariana', services: ['Électricité'] }]);
+    await fixture.whenStable();
+
+    const link = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>('a.profile-link');
+    expect(link?.textContent).toContain('Voir le profil');
+    expect(link?.getAttribute('href')).toBe('/prestataires/abc-123');
+  });
+
   it('shows an explicit message when nobody matches', async () => {
     const fixture = await render();
     http.expectOne((r) => r.url === '/api/providers').flush([]);
