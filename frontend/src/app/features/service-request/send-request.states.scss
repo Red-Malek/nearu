@@ -37,3 +37,5 @@ h2 { display: flex; align-items: center; gap: 12px; }
   .card { padding: 20px 16px; border-radius: 20px; }
   .notice { flex-direction: column; align-items: flex-start; }
 }
+.done-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.done-links .geo { text-decoration: none; }

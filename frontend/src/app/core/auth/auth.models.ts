@@ -9,10 +9,10 @@ export interface CurrentUser {
 
 /**
  * Page d'arrivée de chaque rôle après la connexion (US01, critère 2).
- * Les espaces dédiés seront branchés ici dès qu'ils existeront.
+ * Le client reste sur l'accueil de la marketplace ; son espace est accessible depuis le menu du profil.
  */
 export const ROLE_HOME: Record<UserRole, string> = {
-  CUSTOMER: '/prestataires',
+  CUSTOMER: '/',
   PROFESSIONAL: '/mon-commerce/parametres',
   ADMIN: '/',
 };

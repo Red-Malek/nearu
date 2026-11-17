@@ -51,6 +51,20 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/service-request/send-request.page').then((m) => m.SendRequestPage),
   },
+  // US10 / US09 : suivi des demandes du client et décision sur le devis
+  {
+    path: 'mes-demandes',
+    title: 'Mes demandes · NearU',
+    canActivate: [roleGuard('CUSTOMER')],
+    loadComponent: () => import('./features/my-requests/my-requests.page').then((m) => m.MyRequestsPage),
+  },
+  {
+    path: 'mes-demandes/:id',
+    title: 'Détail de la demande · NearU',
+    canActivate: [roleGuard('CUSTOMER')],
+    loadComponent: () =>
+      import('./features/my-requests/request-detail.page').then((m) => m.RequestDetailPage),
+  },
   // US02 : espace prestataire (paramètres du commerce, dashboard)
   { path: 'espace-prestataire', redirectTo: 'mon-commerce/parametres', pathMatch: 'full' },
   {

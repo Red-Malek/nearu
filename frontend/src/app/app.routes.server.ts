@@ -9,6 +9,8 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'forgot-password', renderMode: RenderMode.Client },
   { path: 'reset-password', renderMode: RenderMode.Client },
   { path: 'demandes/nouvelle', renderMode: RenderMode.Client },
+  { path: 'mes-demandes', renderMode: RenderMode.Client },
+  { path: 'mes-demandes/:id', renderMode: RenderMode.Client },
   { path: 'mon-commerce/parametres', renderMode: RenderMode.Client },
   { path: 'mon-commerce/dashboard', renderMode: RenderMode.Client },
   {

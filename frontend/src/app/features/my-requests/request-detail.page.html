@@ -1,0 +1,83 @@
+<div class="wrap">
+  <a class="back" routerLink="/mes-demandes">← Mes demandes</a>
+
+  @switch (state()) {
+    @case ('loading') {
+      <p class="muted">Chargement de la demande…</p>
+    }
+    @case ('error') {
+      <p class="alert" role="alert">{{ error() }}</p>
+      <a class="btn" routerLink="/mes-demandes">Retour à mes demandes</a>
+    }
+    @case ('ready') {
+      @if (request(); as r) {
+        <header class="head">
+          <p class="eyebrow">{{ r.serviceName }}</p>
+          <h1>{{ r.title }}</h1>
+          <span class="pill" [class]="'pill ' + tone(r.status)">Statut : {{ r.statusLabel }}</span>
+        </header>
+
+        <div class="grid">
+          <section class="card">
+            <h2>Votre demande</h2>
+            <dl>
+              <div><dt>Prestataire</dt><dd><a [routerLink]="['/prestataires', r.professionalId]">{{ r.professionalName }}</a></dd></div>
+              <div><dt>Délai souhaité</dt><dd>{{ r.timingLabel }}@if (r.preferredDate) { · {{ localDate(r.preferredDate) }} }@if (r.preferredTime) { à {{ r.preferredTime.slice(0, 5) }} }</dd></div>
+              <div><dt>Lieu</dt><dd>{{ r.addressLine }}, {{ r.governorateName }}@if (r.addressNote) { <br><small>{{ r.addressNote }}</small> }</dd></div>
+              <div><dt>Envoyée le</dt><dd>{{ dateTime(r.createdAt) }}</dd></div>
+            </dl>
+            <h3>Description</h3>
+            <p class="desc">{{ r.description }}</p>
+          </section>
+
+          <section class="card quotes">
+            <h2>{{ r.quotes.length > 1 ? 'Devis reçus' : 'Devis' }}</h2>
+            @if (decisionDone(); as done) { <p class="alert ok" role="status">{{ done }}</p> }
+            @if (decisionError(); as message) { <p class="alert" role="alert">{{ message }}</p> }
+
+            @for (q of r.quotes; track q.id) {
+              <article class="quote" [class.highlight]="q.canDecide">
+                <p class="amount">{{ tnd(q.amount) }}</p>
+                <p class="q-status">Statut du devis : <b>{{ q.statusLabel }}</b></p>
+                @if (q.description) { <p class="desc">{{ q.description }}</p> }
+                <dl>
+                  <div><dt>Reçu le</dt><dd>{{ dateTime(q.createdAt) }}</dd></div>
+                  <div><dt>Début proposé</dt><dd>{{ dateTime(q.proposedStart) }}</dd></div>
+                  <div><dt>Durée estimée</dt><dd>{{ duration(q.estimatedDurationMinutes) }}</dd></div>
+                  <div><dt>Valable jusqu’au</dt><dd>{{ dateTime(q.validUntil) }}</dd></div>
+                  @if (q.decidedAt) { <div><dt>Votre réponse</dt><dd>{{ dateTime(q.decidedAt) }}</dd></div> }
+                </dl>
+
+                @if (q.canDecide) {
+                  @if (confirming()?.quoteId === q.id) {
+                    <div class="confirm" role="alertdialog" aria-live="assertive">
+                      <p>
+                        {{ confirming()?.decision === 'accept' ? 'Accepter ce devis de ' + tnd(q.amount) + ' ?' : 'Refuser ce devis ?' }}
+                        <b>Cette décision est définitive.</b>
+                      </p>
+                      <div class="actions">
+                        <button class="btn" [class.orange]="confirming()?.decision === 'accept'" type="button" (click)="confirm()" [disabled]="deciding()">
+                          {{ deciding() ? 'Enregistrement…' : (confirming()?.decision === 'accept' ? 'Oui, accepter' : 'Oui, refuser') }}
+                        </button>
+                        <button class="btn ghost" type="button" (click)="cancel()" [disabled]="deciding()">Annuler</button>
+                      </div>
+                    </div>
+                  } @else {
+                    <div class="actions">
+                      <button class="btn orange" type="button" (click)="ask(q.id, 'accept')">Accepter le devis</button>
+                      <button class="btn ghost" type="button" (click)="ask(q.id, 'reject')">Refuser le devis</button>
+                    </div>
+                  }
+                } @else if (q.expired) {
+                  <p class="muted">Ce devis a expiré : demandez-en un nouveau au prestataire.</p>
+                }
+              </article>
+            } @empty {
+              <p class="muted">Aucun devis reçu pour l’instant. Il s’affichera ici dès que {{ r.professionalName }} vous en enverra un.</p>
+            }
+          </section>
+        </div>
+      }
+    }
+  }
+</div>
