@@ -3,7 +3,9 @@
     <span class="eyebrow"><span class="eyebrow-dot"></span> SERVICES LOCAUX, PRÈS DE CHEZ VOUS</span>
     <h1>Trouvez les services<br>locaux <em>facilement.</em></h1>
     <p class="hero-description">Des professionnels de confiance, près de vous. Trouvez le bon prestataire, comparez les profils et avancez en toute sérénité.</p>
-    <a class="button button-orange" routerLink="/" fragment="search">Découvrir les services <span>→</span></a>
+    @if (auth.currentUser()?.role !== 'PROFESSIONAL') {
+      <a class="button button-orange" routerLink="/" fragment="search">Découvrir les services <span>→</span></a>
+    }
     <div class="hero-proof">
       <div class="proof-avatars" aria-hidden="true"><span>👨🏽‍🔧</span><span>👩🏻‍🔧</span><span>👨🏻‍🎨</span></div>
       <p><strong>Des talents près de vous</strong><br><span>Pour tous vos besoins du quotidien</span></p>
@@ -27,3 +29,4 @@
     <div class="visual-caption">✓ &nbsp; Les bons pros, tout près.</div>
   </div>
 </section>
+

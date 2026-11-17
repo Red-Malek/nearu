@@ -4,9 +4,15 @@
 .main-nav a:hover,.main-nav a.active { color:#e97632; }
 .main-nav a.active:after { content:""; display:block; width:17px; height:2px; margin:6px auto -8px; background:#ef7a36; }
 .header-cta { min-height:40px; padding-inline:18px; font-size:12px; }
+.profile-menu { position:relative; }
+.profile-btn { display:flex; align-items:center; gap:10px; min-height:40px; padding:4px 14px 4px 4px; border:0; border-radius:999px; background:#0b2343; color:#fff; font:inherit; font-size:12px; font-weight:700; cursor:pointer; }
+.profile-btn:focus-visible { outline:2px solid #ef7a36; outline-offset:2px; }
+.avatar { display:grid; place-items:center; width:32px; height:32px; border-radius:50%; background:#ef7a36; font-size:11px; }
+.profile-name { max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.chevron { font-size:11px; opacity:.8; }
+.menu { position:absolute; right:0; top:calc(100% + 8px); z-index:20; min-width:200px; margin:0; padding:8px; list-style:none; background:#fff; border:1px solid #e3e8f0; border-radius:16px; box-shadow:0 16px 32px rgba(11,35,67,.16); }
+.menu a, .menu button { display:block; width:100%; padding:11px 14px; border:0; border-radius:10px; background:none; color:#0b2343; font:inherit; font-size:13px; font-weight:600; text-align:left; text-decoration:none; cursor:pointer; }
+.menu a:hover, .menu button:hover, .menu a:focus-visible, .menu button:focus-visible { background:#eaf0f9; outline:none; }
+.menu .logout { margin-top:4px; border-top:1px solid #e3e8f0; border-radius:0 0 10px 10px; color:#b5321f; }
 @media(max-width:900px) { .site-header { flex-wrap:wrap; padding-block:18px; } .main-nav { order:3; width:100%; justify-content:center; gap:22px; } }
 @media(max-width:650px) { .site-header { min-height:auto; gap:12px; } .header-cta { min-height:36px; padding-inline:13px; } .main-nav { justify-content:flex-start; overflow-x:auto; padding:8px 0 11px; gap:21px; white-space:nowrap; } .main-nav a { font-size:11px; } }
-.account { display:flex; align-items:center; gap:12px; }
-.account-name { display:inline-flex; align-items:center; gap:8px; max-width:180px; overflow:hidden; color:#183b30; font-size:12px; font-weight:700; white-space:nowrap; text-overflow:ellipsis; }
-.initials { width:30px; height:30px; display:grid; place-items:center; flex-shrink:0; border-radius:50%; background:#112d27; color:#fff; font-size:11px; }
-@media(max-width:650px) { .account-name { display:none; } }

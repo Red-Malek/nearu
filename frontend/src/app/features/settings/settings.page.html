@@ -1,0 +1,186 @@
+@if (authMsg()) { <div class="banner">{{ authMsg() }}</div> }
+@if (toast()) { <div class="toast">{{ toast() }}</div> }
+
+<main class="page">
+  <p class="crumb">Mon commerce / Paramètres</p>
+  <div class="head">
+    <div>
+      <h1>Paramètres du <em>commerce</em></h1>
+      <p class="lead">Ce que vous renseignez ici apparaît sur votre fiche, visible par les habitants qui cherchent près de chez eux.</p>
+    </div>
+    <span class="pill"><i class="dot" [class.off]="!visible() || !complet()"></i>{{ pill() }}</span>
+  </div>
+
+  <div class="grid">
+    <aside class="side">
+      @for (t of tabs; track t.id) {
+        <button class="tab" [class.on]="tab() === t.id" (click)="tab.set(t.id)">
+          <svg viewBox="0 0 24 24"><path [attr.d]="t.icon"/></svg>{{ t.label }}
+        </button>
+      }
+      <hr>
+      <button class="tab danger" [class.on]="tab() === 'compte'" (click)="tab.set('compte')">
+        <svg viewBox="0 0 24 24"><path [attr.d]="accountIcon"/></svg>Compte et visibilité
+      </button>
+    </aside>
+
+    <section class="card">
+      @switch (tab()) {
+        @case ('profil') {
+          <h2>Profil du commerce</h2>
+          <p class="sub">Les informations de base que les clients voient en premier.</p>
+          <label>Nom du commerce</label>
+          <input [ngModel]="nom()" (ngModelChange)="nom.set($event)">
+          <label>Activité principale</label>
+          <select [ngModel]="activite()" (ngModelChange)="activite.set($event)">
+            <option value="">Choisir une activité</option>
+            @for (c of activites(); track c.id) { <option [value]="c.id">{{ c.name }}</option> }
+          </select>
+          <label>Description</label>
+          <textarea rows="4" maxlength="280" [ngModel]="description()" (ngModelChange)="description.set($event)"></textarea>
+          <div class="count">{{ description().length }} / 280</div>
+        }
+        @case ('horaires') {
+          <h2>Horaires d’ouverture</h2>
+          <p class="sub">Indiquez quand vous êtes joignable. Les clients voient si vous êtes ouvert en ce moment.</p>
+          @for (j of jours(); track j.name; let i = $index) {
+            <div class="row-day">
+              <button type="button" class="switch" [class.on]="j.on" (click)="updateDay(i, { on: !j.on })" [attr.aria-pressed]="j.on"></button>
+              <b>{{ j.name }}</b>
+              @if (j.on) {
+                <input type="time" class="time" [ngModel]="j.from" (ngModelChange)="updateDay(i, { from: $event })">
+                <span class="a">à</span>
+                <input type="time" class="time" [ngModel]="j.to" (ngModelChange)="updateDay(i, { to: $event })">
+              } @else { <span class="closed">Fermé</span> }
+            </div>
+          }
+        }
+        @case ('adresse') {
+          <h2>Adresse et zone d’intervention</h2>
+          <p class="sub">Votre adresse place votre fiche sur la carte. La zone détermine les recherches où vous apparaissez.</p>
+          <div class="map">
+            <svg viewBox="0 0 460 190" preserveAspectRatio="none">
+              <path d="M60 0l-10 190M300 0l-15 190M400 0l-6 190" stroke="#fff" stroke-width="9" fill="none"/>
+              <path d="M0 22h460M0 75l460-12M0 150l460 12" stroke="#fff" stroke-width="8" fill="none"/>
+              <rect x="0" y="95" width="40" height="24" rx="6" fill="#dbe4f2"/><rect x="340" y="95" width="70" height="30" rx="6" fill="#dbe4f2"/>
+            </svg>
+            <span class="zone"></span>
+            <svg class="pin" viewBox="0 0 24 30"><path d="M12 29S2 18 2 11a10 10 0 0120 0c0 7-10 18-10 18z" fill="#0f1f3d"/><circle cx="12" cy="11" r="4" fill="#f47a1f"/></svg>
+          </div>
+          <label>Adresse</label>
+          <input [ngModel]="adresse()" (ngModelChange)="adresse.set($event)">
+          <div class="two">
+            <div><label>Code postal</label><input [ngModel]="cp()" (ngModelChange)="cp.set($event)"></div>
+            <div>
+              <label>Ville</label>
+              <select [ngModel]="gouvernorat()" (ngModelChange)="gouvernorat.set($event)">
+                <option value="">Choisir</option>
+                @for (g of gouvernorats(); track g.id) { <option [value]="g.id">{{ g.name }}</option> }
+              </select>
+            </div>
+          </div>
+          <label>Rayon d’intervention</label>
+          <select [ngModel]="rayon()" (ngModelChange)="rayon.set($event)">
+            @for (r of rayons; track r) { <option>{{ r }}</option> }
+          </select>
+          <p class="hint">Votre fiche apparaît dans les recherches des habitants situés dans ce rayon.</p>
+          <div class="toggle-row">
+            <div><b>Masquer l’adresse exacte</b><p>Utile si vous travaillez à domicile : seule la ville s’affiche sur la fiche.</p></div>
+            <button type="button" class="switch" [class.on]="masquer()" (click)="masquer.set(!masquer())"></button>
+          </div>
+        }
+        @case ('services') {
+          <h2>Services proposés</h2>
+          <p class="sub">Ajoutez les prestations pour apparaître quand on cherche « plombier », « fuite » ou « chauffe-eau ».</p>
+          <label>Vos services</label>
+          <div class="chips">
+            @for (s of services(); track s; let i = $index) {
+              <span class="chip" [class.first]="i === 0">{{ nomService(s) }}<button (click)="removeService(s)" aria-label="Retirer">×</button></span>
+            }
+          </div>
+          <div class="add">
+            <input placeholder="Ex. Débouchage de canalisation" [ngModel]="nouveau()" (ngModelChange)="nouveau.set($event)" (keyup.enter)="addService()">
+            <button class="btn-dark" (click)="addService()">Ajouter</button>
+          </div>
+          <div class="sugg">
+            @for (c of suggestions(); track c.id) { <button (click)="addService(c.id)">+ {{ c.name }}</button> }
+          </div>
+          <div class="toggle-row bordered">
+            <div><b>Devis gratuit</b><p>Affiche la mention « Devis gratuit » sur votre fiche.</p></div>
+            <button type="button" class="switch" [class.on]="devis()" (click)="devis.set(!devis())"></button>
+          </div>
+          <div class="toggle-row bordered">
+            <div><b>Intervention en urgence</b><p>Les clients peuvent filtrer les professionnels disponibles en urgence.</p></div>
+            <button type="button" class="switch" [class.on]="urgence()" (click)="urgence.set(!urgence())"></button>
+          </div>
+        }
+        @case ('contact') {
+          <h2>Coordonnées de contact</h2>
+          <p class="sub">Ces informations sont affichées sur votre fiche. Choisissez uniquement celles que vous voulez partager.</p>
+          <div class="two">
+            <div><label>Téléphone</label><input [ngModel]="tel()" (ngModelChange)="tel.set($event)"></div>
+            <div><label>E-mail professionnel</label><input [ngModel]="email()" (ngModelChange)="email.set($event)"></div>
+          </div>
+          <label>Site web <span class="opt">(facultatif)</span></label>
+          <input [ngModel]="site()" (ngModelChange)="site.set($event)">
+          <div class="toggle-row bordered">
+            <div><b>Recevoir les messages depuis la fiche</b><p>Les messages arrivent dans votre boîte NearU et par e-mail.</p></div>
+            <button type="button" class="switch" [class.on]="recevoir()" (click)="recevoir.set(!recevoir())"></button>
+          </div>
+        }
+        @case ('notifications') {
+          <h2>Notifications</h2>
+          <p class="sub">Choisissez comment être prévenu de ce qui se passe sur votre fiche.</p>
+          <div class="notif-head"><span>E-mail</span><span>Mobile</span></div>
+          <div class="notif">
+            <div><b>Nouveau message client</b><p>Quand quelqu’un vous écrit depuis votre fiche.</p></div>
+            <button type="button" class="switch" [class.on]="notifEmail()" (click)="notifEmail.set(!notifEmail())"></button>
+            <button type="button" class="switch" [class.on]="notifMobile()" (click)="notifMobile.set(!notifMobile())"></button>
+          </div>
+        }
+        @case ('compte') {
+          <h2>Compte et visibilité</h2>
+          <p class="sub">Contrôlez si votre commerce apparaît dans les recherches.</p>
+          <div class="toggle-row">
+            <div><b>Fiche visible dans les recherches</b><p>Désactivez pour mettre votre fiche en pause, par exemple pendant vos congés. Vos données sont conservées.</p></div>
+            <button type="button" class="switch" [class.on]="visible()" (click)="visible.set(!visible())"></button>
+          </div>
+          <label>Mot de passe</label>
+          <button class="btn-outline" (click)="changerMotDePasse()">Modifier le mot de passe</button>
+          <div class="danger-zone">
+            <b>Supprimer mon commerce</b>
+            <p>Votre fiche disparaît définitivement de NearU. Cette action est irréversible.</p>
+            <button class="btn-danger" (click)="supprimer()">Supprimer la fiche</button>
+          </div>
+        }
+      }
+      @if (nonSauve()) { <p class="note">Non enregistré pour le moment : {{ nonSauve() }}.</p> }
+      <p class="status" [class.err]="statut() === 'error'">{{ statut() === 'saving' ? 'Enregistrement…' : statut() === 'error' ? 'Non enregistré, nouvelle tentative à la prochaine modification' : 'Toutes les modifications sont enregistrées' }}</p>
+    </section>
+
+    <aside class="right">
+      <div class="preview">
+        <div class="ph"><span>Aperçu de votre fiche</span><span class="live">En direct</span></div>
+        <div class="pcard">
+          <h3>{{ nom() || 'Nom de votre commerce' }}</h3>
+          <p class="near">Fiche près de vous · à 450 m</p>
+          <p class="open" [class.closed-now]="!ouvert()"><i class="dot"></i>{{ ouvert() ? 'Ouvert maintenant' : 'Fermé actuellement' }}</p>
+          <div class="tags">
+            @for (s of previewServices(); track s) { <span>{{ s }}</span> }
+          </div>
+          <div class="info">
+            <div><b>Horaires</b><span>{{ previewHoraires() }}</span></div>
+            <div><b>Adresse</b><span>{{ previewAdresse() }}</span></div>
+            <div><b>Contact</b><span>{{ tel() || '—' }}</span></div>
+          </div>
+          <button class="btn-dark full">Fiche commerçant NearU</button>
+        </div>
+      </div>
+      <div class="complete">
+        <b>Fiche complète à {{ completion() }} %</b>
+        <p>{{ complet() ? 'Les fiches complètes sont plus souvent consultées. Ajoutez des services et une description.' : 'Ajoutez au moins un service et une ville pour apparaître dans les recherches.' }}</p>
+        <div class="bar"><span [style.width.%]="completion()"></span></div>
+      </div>
+    </aside>
+  </div>
+</main>

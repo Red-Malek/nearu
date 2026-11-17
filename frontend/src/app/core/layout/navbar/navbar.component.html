@@ -4,16 +4,30 @@
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Accueil</a>
     <a routerLink="/" fragment="how-it-works">Comment ça marche</a>
     <a routerLink="/" fragment="about">À propos</a>
-    <a routerLink="/" fragment="providers">Prestataires</a>
+    @if (auth.currentUser()?.role !== 'PROFESSIONAL') {
+      <a routerLink="/" fragment="providers">Prestataires</a>
+    }
     <a routerLink="/" fragment="contact">Contact</a>
   </nav>
-  @if (auth.currentUser(); as user) {
-    <div class="account">
-      <span class="account-name" [title]="user.fullName">
-        <span class="initials" aria-hidden="true">{{ initials(user.fullName) }}</span>
-        {{ user.fullName }}
-      </span>
-      <button type="button" class="button button-dark header-cta" (click)="logout()">Déconnexion</button>
+  @if (auth.currentUser(); as me) {
+    <div class="profile-menu">
+      <button type="button" class="profile-btn" aria-haspopup="menu" [attr.aria-expanded]="open()"
+              aria-label="Menu du profil" (click)="toggle($event)">
+        <span class="avatar">{{ initials() }}</span>
+        <span class="profile-name">{{ me.fullName }}</span>
+        <span class="chevron" aria-hidden="true">▾</span>
+      </button>
+      @if (open()) {
+        <ul class="menu" role="menu">
+          @if (me.role === 'PROFESSIONAL') {
+            <li role="none"><a role="menuitem" routerLink="/mon-commerce/parametres" (click)="close()">Paramètres</a></li>
+            <li role="none"><a role="menuitem" routerLink="/mon-commerce/dashboard" (click)="close()">Dashboard</a></li>
+          } @else {
+            <li role="none"><a role="menuitem" routerLink="/prestataires" (click)="close()">Trouver un prestataire</a></li>
+          }
+          <li role="none"><button type="button" role="menuitem" class="logout" (click)="logout()">Déconnexion</button></li>
+        </ul>
+      }
     </div>
   } @else {
     <a class="button button-dark header-cta" routerLink="/login">Connexion <span>↗</span></a>

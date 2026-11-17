@@ -13,7 +13,7 @@ export interface CurrentUser {
  */
 export const ROLE_HOME: Record<UserRole, string> = {
   CUSTOMER: '/prestataires',
-  PROFESSIONAL: '/',
+  PROFESSIONAL: '/mon-commerce/parametres',
   ADMIN: '/',
 };
 
