@@ -3,9 +3,6 @@
 :host {
   --orange: #f47b20; --muted: #5b6679; --bg: #f7f9fc; --line: #e3e8f0; --peach: #fff0e5; --field: #fff;
 }
-@media (prefers-color-scheme: dark) {
-  :host { --muted: #9aa6bb; --bg: #0b1628; --line: #26385a; --peach: #2b2118; --field: #0e1b31; }
-}
 h2 { display: flex; align-items: center; gap: 12px; }
 .chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .chip { position: relative; margin: 0; }

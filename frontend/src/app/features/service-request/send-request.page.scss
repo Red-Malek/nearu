@@ -1,21 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap');
 
-// Reprise fidèle de la maquette « Envoyer une demande » (clair + sombre automatique)
+// Reprise fidèle de la maquette « Envoyer une demande » (thème clair uniquement en v1)
 :host {
   --navy: #0f2342; --orange: #f47b20; --orange-d: #d9650e; --ink: #0f2342; --muted: #5b6679;
   --bg: #f7f9fc; --card: #fff; --line: #e3e8f0; --peach: #fff0e5; --field: #fff; --on-navy: #fff;
   --btn: #0f2342; --err: #d33a2c; --ok: #1b7f5a;
   display: block;
 }
-@media (prefers-color-scheme: dark) {
-  :host {
-    --ink: #eef2f9; --muted: #9aa6bb; --bg: #0b1628; --card: #122039; --line: #26385a; --peach: #2b2118;
-    --field: #0e1b31; --btn: #f47b20; --on-navy: #0f2342; --navy: #eef2f9;
-  }
-  .logo-light { display: none; }
-  .geo { color: var(--orange); }
-}
-@media (prefers-color-scheme: light) { .logo-dark { display: none; } }
 
 .request-page { min-height: 100vh; background: var(--bg); color: var(--ink); font-family: Manrope, system-ui, sans-serif; line-height: 1.5; }
 .wrap { max-width: 860px; margin: 0 auto; padding: 20px 20px 64px; }
