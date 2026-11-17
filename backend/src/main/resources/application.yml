@@ -11,6 +11,13 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Supabase Auth public keys (not a secret).
+          jwk-set-uri: ${SUPABASE_JWKS_URL:https://sdaquhofdlrodktfrzga.supabase.co/auth/v1/.well-known/jwks.json}
+          jws-algorithms: ES256,RS256
 
 management:
   endpoints:

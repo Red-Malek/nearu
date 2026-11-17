@@ -7,5 +7,9 @@
     <a routerLink="/" fragment="providers">Prestataires</a>
     <a routerLink="/" fragment="contact">Contact</a>
   </nav>
-  <a class="button button-dark header-cta" routerLink="/" fragment="contact">Connexion <span>↗</span></a>
+  @if (auth.me(); as me) {
+    <a class="button button-dark header-cta" [routerLink]="auth.spacePath(me.role)">Mon espace <span>↗</span></a>
+  } @else {
+    <a class="button button-dark header-cta" routerLink="/connexion">Connexion <span>↗</span></a>
+  }
 </header>

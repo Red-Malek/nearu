@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, afterNextRender, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { LogoComponent } from '../../../shared/logo/logo.component';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -9,4 +10,11 @@ import { LogoComponent } from '../../../shared/logo/logo.component';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
-export class NavbarComponent {}
+export class NavbarComponent {
+  readonly auth = inject(AuthService);
+
+  constructor() {
+    // Browser only: restore the session after a page reload.
+    afterNextRender(() => this.auth.init());
+  }
+}
