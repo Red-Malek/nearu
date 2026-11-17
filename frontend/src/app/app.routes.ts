@@ -6,5 +6,9 @@ export const routes: Routes = [
     path: 'prestataires',
     loadComponent: () => import('./features/search/search.page').then((m) => m.SearchPage),
   },
+  {
+    path: 'prestataires/:id',
+    loadComponent: () => import('./features/profile/profile.page').then((m) => m.ProfilePage),
+  },
   { path: '**', redirectTo: '' },
 ];

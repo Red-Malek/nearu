@@ -1,2 +1,10 @@
 :host { display: block; color: var(--near-ink); }
-.site-shell { overflow: hidden; background: #fff; }
+.site-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #fff;
+}
+.site-shell > main { flex: 1; }

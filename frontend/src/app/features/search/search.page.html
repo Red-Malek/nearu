@@ -51,6 +51,7 @@
                   <h3>{{ p.name }}</h3>
                   <p class="services">{{ p.services.join(' · ') }}</p>
                   <p class="city"><span aria-hidden="true">⌖</span> {{ p.city }}</p>
+                  <a class="profile-link" [routerLink]="['/prestataires', p.id]">Voir le profil</a>
                 </div>
               </li>
             }

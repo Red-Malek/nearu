@@ -1,6 +1,6 @@
 import { Component, DestroyRef, afterNextRender, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { EMPTY, catchError, switchMap, tap } from 'rxjs';
 import { Category, CategoryService } from '../../core/category.service';
 import { Governorate, GovernorateService } from '../../core/governorate.service';
@@ -11,6 +11,7 @@ type Status = 'loading' | 'ready' | 'error';
 @Component({
   selector: 'app-search-page',
   standalone: true,
+  imports: [RouterLink],
   templateUrl: './search.page.html',
   styleUrl: './search.page.scss',
 })
