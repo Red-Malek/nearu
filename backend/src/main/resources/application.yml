@@ -1,6 +1,12 @@
 spring:
   application:
     name: nearu-backend
+  config:
+    # Lit le fichier .env de la racine du dépôt (copie de .env.example, ignoré par Git).
+    # Les variables d'environnement du système restent prioritaires.
+    import:
+      - optional:file:../.env[.properties]
+      - optional:file:./.env[.properties]
   datasource:
     url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:nearu}
     username: ${POSTGRES_USER:nearu}
@@ -11,6 +17,21 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
+
+server:
+  error:
+    # Les erreurs non gérées renvoient leur vrai message (au lieu d'une erreur muette)
+    include-message: always
+
+nearu:
+  supabase:
+    url: ${SUPABASE_URL:}
+    # Clé publique (« anon » / « publishable ») transmise au frontend par GET /api/public-config
+    anon-key: ${SUPABASE_ANON_KEY:}
+    # Clés asymétriques (projets récents) : https://<projet>.supabase.co/auth/v1/.well-known/jwks.json
+    jwks-url: ${SUPABASE_JWKS_URL:}
+    # Uniquement pour les projets encore en « Legacy JWT secret » (HS256)
+    jwt-secret: ${SUPABASE_JWT_SECRET:}
 
 management:
   endpoints:

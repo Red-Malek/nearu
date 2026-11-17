@@ -1,7 +1,4 @@
-.brand { display:inline-flex; align-items:center; gap:9px; text-decoration:none; color:#183b30; flex-shrink:0; }
-.brand-mark { width:36px; height:36px; display:grid; place-items:center; border-radius:50%; color:#1f6b50; background:#e7f1e9; font-size:27px; }
-.brand-word { font-size:23px; font-weight:800; letter-spacing:-1.3px; }
-.brand-word span { color:#f47b35; }
-.small .brand-mark { width:29px; height:29px; font-size:21px; }
-.small .brand-word { font-size:19px; }
-@media(max-width:650px) { .brand-word { font-size:21px; } .small .brand-word { font-size:19px; } }
+.brand { display:inline-flex; align-items:center; text-decoration:none; flex-shrink:0; }
+.brand img { display:block; width:auto; height:38px; }
+.small img { height:30px; }
+@media(max-width:650px) { .brand img { height:32px; } .small img { height:28px; } }

@@ -1,0 +1,118 @@
+<app-auth-shell
+  titleStart="Rejoignez"
+  titleAccent="nearU"
+  titleEnd="en quelques secondes."
+  subtitle="Créez votre compte pour trouver, ou être trouvé, près de chez vous."
+  [items]="[
+    'Recherchez par service, lieu et distance',
+    'Consultez les fiches des commerçants',
+    'Présentez votre commerce à votre quartier'
+  ]"
+>
+  <p shellTopRight class="top-link">Déjà inscrit ? <a routerLink="/login">Se connecter</a></p>
+
+  <div class="auth-card">
+    @if (confirmEmail(); as email) {
+      <div class="auth-icon" aria-hidden="true">✉</div>
+      <h1>Vérifiez vos e-mails</h1>
+      <p class="lead">
+        Un e-mail de vérification a été envoyé à <strong>{{ email }}</strong>. Cliquez sur le lien
+        qu’il contient pour activer votre compte : vous serez connecté automatiquement.
+      </p>
+      <div class="actions">
+        @if (errorMessage(); as message) {
+          <p class="alert alert-error" role="alert">{{ message }}</p>
+        }
+        @if (resendState() === 'sent') {
+          <p class="alert alert-success" role="status">E-mail renvoyé. Pensez aux courriers indésirables.</p>
+        } @else {
+          <button class="btn-primary" type="button" (click)="resendConfirmation()"
+            [disabled]="resendState() === 'sending'">
+            {{ resendState() === 'sending' ? 'Envoi…' : 'Renvoyer l’e-mail de vérification' }}
+          </button>
+        }
+        <a class="link-center" routerLink="/login">← Retour à la connexion</a>
+      </div>
+    } @else {
+      <h1>Créer un compte</h1>
+      <p class="lead">Quelques informations suffisent pour commencer.</p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="field">
+          <span class="label">Type de compte</span>
+          <div class="toggle" role="radiogroup" aria-label="Type de compte">
+            <button type="button" role="radio" [class.active]="form.controls.role.value === 'CUSTOMER'"
+              [attr.aria-checked]="form.controls.role.value === 'CUSTOMER'" (click)="setRole('CUSTOMER')">
+              Particulier
+            </button>
+            <button type="button" role="radio" [class.active]="form.controls.role.value === 'PROFESSIONAL'"
+              [attr.aria-checked]="form.controls.role.value === 'PROFESSIONAL'" (click)="setRole('PROFESSIONAL')">
+              Commerçant / Prestataire
+            </button>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="reg-first">Prénom</label>
+            <input id="reg-first" type="text" formControlName="firstName" placeholder="Votre prénom"
+              autocomplete="given-name" [class.invalid]="fieldError('firstName')" />
+            @if (fieldError('firstName'); as e) { <span class="error-text">{{ e }}</span> }
+          </div>
+          <div class="field">
+            <label for="reg-last">Nom</label>
+            <input id="reg-last" type="text" formControlName="lastName" placeholder="Votre nom"
+              autocomplete="family-name" [class.invalid]="fieldError('lastName')" />
+            @if (fieldError('lastName'); as e) { <span class="error-text">{{ e }}</span> }
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="reg-email">E-mail</label>
+          <input id="reg-email" type="email" formControlName="email" placeholder="votre@email.com"
+            autocomplete="email" [class.invalid]="fieldError('email')" />
+          @if (fieldError('email'); as e) { <span class="error-text">{{ e }}</span> }
+        </div>
+
+        <div class="field">
+          <label for="reg-phone">Téléphone</label>
+          <div class="phone">
+            <span>+216</span>
+            <input id="reg-phone" type="text" inputmode="numeric" formControlName="phone"
+              placeholder="20 123 456" autocomplete="tel-national" [class.invalid]="fieldError('phone')" />
+          </div>
+          @if (fieldError('phone'); as e) { <span class="error-text">{{ e }}</span> }
+        </div>
+
+        <div class="field">
+          <label for="reg-password">Mot de passe</label>
+          <input id="reg-password" type="password" formControlName="password"
+            placeholder="Choisissez un mot de passe" autocomplete="new-password"
+            [class.invalid]="fieldError('password')" />
+          @if (fieldError('password'); as e) {
+            <span class="error-text">{{ e }}</span>
+          } @else {
+            <span class="hint">Au moins {{ minLength }} caractères.</span>
+          }
+        </div>
+
+        <label class="checkbox terms">
+          <input type="checkbox" formControlName="acceptTerms" />
+          <span>J'accepte les <strong>conditions d'utilisation</strong> et la
+            <strong>politique de confidentialité</strong>.</span>
+        </label>
+        @if (fieldError('acceptTerms'); as e) { <span class="error-text">{{ e }}</span> }
+
+        @if (errorMessage(); as message) {
+          <p class="alert alert-error" role="alert">{{ message }}</p>
+        }
+
+        <button class="btn-primary" type="submit" [disabled]="submitting()">
+          {{ submitting() ? 'Création du compte…' : 'Créer mon compte' }}
+        </button>
+      </form>
+
+      <p class="bottom-link">Vous avez déjà un compte ? <a routerLink="/login">Se connecter</a></p>
+    }
+  </div>
+</app-auth-shell>

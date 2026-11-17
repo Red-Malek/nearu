@@ -13,10 +13,12 @@ Angular · Spring Boot · PostgreSQL/PostGIS · Supabase Auth · Docker
 
 ## Lancer le projet
 ```bash
-cp .env.example .env     # puis remplir les valeurs
+cp .env.example .env     # puis remplir les valeurs (voir docs/supabase/README.md)
 docker compose up -d     # demarre la base de donnees
+cd backend && ./mvnw spring-boot:run      # lit automatiquement ../.env (port 8080)
+cd frontend && npm install && npm start   # http://localhost:4200, /api redirigé vers le backend
 ```
-(À compléter une fois le backend et le frontend ajoutés.)
+Authentification et e-mails (Supabase, SMTP, URL de redirection) : [docs/supabase/README.md](docs/supabase/README.md).
 
 ## Workflow Git
 - `main` est toujours stable, aucun push direct

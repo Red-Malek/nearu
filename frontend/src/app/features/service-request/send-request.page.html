@@ -1,0 +1,194 @@
+<main class="request-page">
+  <a class="back" routerLink="/">← Retour à l'accueil</a>
+
+  <header class="page-head">
+    <div>
+      <h1>Envoyer une <em>demande</em></h1>
+      <p>Décrivez votre besoin et trouvez le prestataire idéal pour y répondre.</p>
+    </div>
+    <svg class="head-art" viewBox="0 0 160 120" aria-hidden="true">
+      <circle cx="80" cy="64" r="52" fill="#eaf0fb" />
+      <rect x="48" y="22" width="60" height="80" rx="8" fill="#fff" stroke="#1d3f8f" stroke-width="4" />
+      <rect x="66" y="16" width="24" height="12" rx="4" fill="#1d3f8f" />
+      <path d="M60 46h36M60 58h36M60 70h22" stroke="#9db4e0" stroke-width="4" stroke-linecap="round" />
+      <circle cx="104" cy="82" r="14" fill="#fff" stroke="#0d2240" stroke-width="5" />
+      <path d="M114 92l14 14" stroke="#0d2240" stroke-width="6" stroke-linecap="round" />
+      <path d="M128 18l20-8-8 20-4-8z" fill="#f47732" />
+    </svg>
+  </header>
+
+  @if (created(); as request) {
+    <section class="card success" role="status">
+      <span class="success-icon" aria-hidden="true">✓</span>
+      <h2>Demande envoyée !</h2>
+      <p>
+        Votre demande « {{ request.title }} » a été transmise à
+        <strong>{{ request.professionalName }}</strong>.
+      </p>
+      <dl>
+        <div><dt>Statut</dt><dd><span class="status">{{ request.statusLabel }}</span></dd></div>
+        <div><dt>Catégorie</dt><dd>{{ request.categoryName }}</dd></div>
+        <div><dt>Adresse</dt><dd>{{ request.addressLine }}</dd></div>
+      </dl>
+      <div class="success-actions">
+        <button type="button" class="btn-orange" (click)="startNew()">Envoyer une autre demande</button>
+        <a class="btn-ghost" routerLink="/">Retour à l'accueil</a>
+      </div>
+    </section>
+  } @else if (optionsError(); as message) {
+    <section class="card">
+      <p class="alert" role="alert">{{ message }}</p>
+      <button type="button" class="btn-orange" (click)="loadOptions()">Réessayer</button>
+    </section>
+  } @else {
+    <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (!isLoggedIn()) {
+        <p class="login-hint" role="status">
+          Vous devez être connecté avec un compte client pour envoyer une demande.
+          <button type="button" (click)="goToLogin()">Se connecter</button>
+        </p>
+      }
+      <!-- 1. Besoin -->
+      <h2><span class="step">1</span> Informations sur votre besoin</h2>
+      <div class="grid">
+        <div class="field">
+          <label for="req-category">Catégorie de service <b>*</b></label>
+          <div class="control icon-grid" [class.invalid]="fieldError('categoryId')">
+            <select id="req-category" formControlName="categoryId">
+              <option value="" disabled>Choisir une catégorie</option>
+              @for (category of categories(); track category.id) {
+                <option [value]="category.id">{{ category.name }}</option>
+              }
+              @if (optionsLoaded()) {
+                <option [value]="otherValue">Autre (à préciser)</option>
+              }
+            </select>
+          </div>
+          @if (fieldError('categoryId'); as error) { <span class="error">{{ error }}</span> }
+        </div>
+        <div class="field">
+          <label for="req-title">Titre de votre demande <b>*</b></label>
+          <input id="req-title" class="control" formControlName="title" [maxlength]="limits.titleMax"
+            placeholder="Ex : Réparer mon ordinateur..." [class.invalid]="fieldError('title')" />
+          @if (fieldError('title'); as error) { <span class="error">{{ error }}</span> }
+        </div>
+      </div>
+      @if (isOtherCategory()) {
+        <div class="field">
+          <label for="req-other">Précisez votre catégorie <b>*</b></label>
+          <input id="req-other" class="control" formControlName="otherCategory"
+            [maxlength]="limits.otherCategoryMax" placeholder="Ex : Vitrerie, Plomberie de piscine..."
+            [class.invalid]="fieldError('otherCategory')" />
+          @if (fieldError('otherCategory'); as error) { <span class="error">{{ error }}</span> }
+        </div>
+      }
+      <div class="field">
+        <label for="req-description">Description détaillée <b>*</b></label>
+        <textarea id="req-description" class="control" rows="4" formControlName="description"
+          [maxlength]="limits.descriptionMax" [class.invalid]="fieldError('description')"
+          placeholder="Décrivez en détail votre besoin, vos attentes et toute information utile..."></textarea>
+        <div class="field-foot">
+          <span class="error">{{ fieldError('description') }}</span>
+          <span class="counter">{{ descriptionLength() }} / {{ limits.descriptionMax }}</span>
+        </div>
+      </div>
+
+      <!-- 2. Localisation -->
+      <h2><span class="step">2</span> Localisation et disponibilité</h2>
+      <div class="grid">
+        <div class="field">
+          <label for="req-governorate">Gouvernorat <b>*</b></label>
+          <div class="control icon-pin" [class.invalid]="fieldError('governorateId')">
+            <select id="req-governorate" formControlName="governorateId">
+              <option value="" disabled>Votre gouvernorat</option>
+              @for (gov of governorates(); track gov.id) {
+                <option [value]="gov.id">{{ gov.name }}</option>
+              }
+            </select>
+          </div>
+          @if (fieldError('governorateId'); as error) { <span class="error">{{ error }}</span> }
+        </div>
+        <div class="field">
+          <label for="req-date">Date souhaitée <small>(optionnel)</small></label>
+          <input id="req-date" class="control" type="date" formControlName="preferredDate" [min]="today"
+            [class.invalid]="fieldError('preferredDate')" />
+          @if (fieldError('preferredDate'); as error) { <span class="error">{{ error }}</span> }
+        </div>
+      </div>
+      <div class="field">
+        <label for="req-address">Adresse de l'intervention <b>*</b></label>
+        <input id="req-address" class="control" formControlName="addressLine" [maxlength]="limits.addressMax"
+          placeholder="Ex : 12 rue de Marseille, La Marsa" [class.invalid]="fieldError('addressLine')" />
+        @if (fieldError('addressLine'); as error) { <span class="error">{{ error }}</span> }
+      </div>
+
+      <!-- 3. Prestataire -->
+      <h2><span class="step">3</span> Choisissez un prestataire <b>*</b></h2>
+      <p class="info">
+        <span aria-hidden="true">i</span>
+        @if (isOtherCategory()) {
+          Catégorie « Autre » : tous les prestataires disponibles sont listés. Choisissez celui qui
+          correspond le mieux à votre besoin ; il pourra accepter ou refuser votre demande.
+        } @else {
+          Seuls les prestataires qui proposent la catégorie choisie et acceptent de nouvelles demandes
+          sont listés. Indiquez votre gouvernorat pour voir ceux proches de chez vous.
+        }
+      </p>
+
+      @if (!hasCategory()) {
+        <p class="muted">Choisissez d'abord une catégorie de service.</p>
+      } @else {
+        <input class="control icon-search" type="search" [formControl]="professionalSearch"
+          placeholder="Rechercher un prestataire..." aria-label="Rechercher un prestataire" />
+        <div class="pros" role="radiogroup" aria-label="Prestataires disponibles">
+          @if (professionalsLoading()) {
+            <p class="muted">Recherche des prestataires…</p>
+          } @else if (professionalsError(); as message) {
+            <p class="error">{{ message }}</p>
+          } @else {
+            @for (pro of professionals(); track pro.id) {
+              <button type="button" class="pro" role="radio"
+                [attr.aria-checked]="form.controls.professionalId.value === pro.id"
+                [class.selected]="form.controls.professionalId.value === pro.id"
+                (click)="selectProfessional(pro.id)">
+                <span class="avatar" aria-hidden="true">{{ pro.displayName.charAt(0) }}</span>
+                <span class="pro-text">
+                  <strong>{{ pro.displayName }} @if (pro.verified) { <i class="badge">Vérifié</i> }</strong>
+                  <small>
+                    {{ pro.governorateName ?? 'Zone non précisée' }}
+                    @if (pro.reviewCount > 0) { · ★ {{ pro.avgRating }} ({{ pro.reviewCount }} avis) }
+                  </small>
+                </span>
+              </button>
+            } @empty {
+              <p class="muted">Aucun prestataire disponible pour ces critères. Essayez un autre gouvernorat.</p>
+            }
+          }
+        </div>
+      }
+      @if (fieldError('professionalId'); as error) { <span class="error">{{ error }}</span> }
+
+      @if (errorMessage(); as message) {
+        <p class="alert" role="alert">{{ message }}</p>
+      }
+
+      <button type="submit" class="btn-orange submit" [disabled]="submitting()">
+        <span aria-hidden="true">➤</span>
+        @if (!isLoggedIn()) {
+          Se connecter pour envoyer
+        } @else {
+          {{ submitting() ? 'Envoi en cours…' : 'Envoyer la demande' }}
+        }
+      </button>
+    </form>
+  }
+
+  <aside class="safe">
+    <span aria-hidden="true">🛡</span>
+    <p>
+      <strong>Votre demande est en sécurité</strong>
+      Vos informations sont protégées et partagées uniquement avec le prestataire concerné.
+    </p>
+  </aside>
+</main>
+

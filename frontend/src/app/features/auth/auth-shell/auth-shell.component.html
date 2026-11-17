@@ -1,0 +1,58 @@
+<div class="auth-page">
+  <aside class="auth-panel">
+    <span class="deco deco-ring" aria-hidden="true"></span>
+    <span class="deco deco-ring deco-ring-dashed" aria-hidden="true"></span>
+    <span class="deco deco-moon" aria-hidden="true"></span>
+
+    <div class="logo"><app-logo tone="dark" /></div>
+
+    <div class="panel-copy">
+      <h2>
+        {{ titleStart() }} <em>{{ titleAccent() }}</em> {{ titleEnd() }}
+      </h2>
+      <p>{{ subtitle() }}</p>
+      <ul [class.numbered]="numbered()">
+        @for (item of items(); track item; let i = $index) {
+          <li>
+            <span class="bullet" aria-hidden="true">{{ numbered() ? i + 1 : '✓' }}</span>
+            {{ item }}
+          </li>
+        }
+      </ul>
+    </div>
+
+    <svg class="city" viewBox="0 0 440 170" aria-hidden="true">
+      <path d="M40 110 Q220 -10 400 110" fill="none" stroke="#5b7fbf" stroke-width="2" stroke-dasharray="6 7" />
+      <g fill="#f47732">
+        <rect x="0" y="92" width="16" height="16" /><rect x="28" y="92" width="16" height="16" />
+        <rect x="56" y="92" width="16" height="16" />
+      </g>
+      <rect x="0" y="108" width="120" height="62" fill="#163a6b" />
+      <rect x="140" y="80" width="160" height="90" fill="#1d4a86" />
+      <g fill="#3f72c0">
+        <rect x="140" y="64" width="20" height="16" /><rect x="180" y="64" width="20" height="16" />
+        <rect x="220" y="64" width="20" height="16" /><rect x="260" y="64" width="20" height="16" />
+        <rect x="160" y="96" width="16" height="16" /><rect x="262" y="96" width="16" height="16" />
+      </g>
+      <rect x="200" y="122" width="40" height="48" fill="#0d2240" />
+      <rect x="320" y="108" width="120" height="62" fill="#163a6b" />
+      <g fill="#a9c4ec">
+        <rect x="330" y="92" width="16" height="16" /><rect x="368" y="92" width="16" height="16" />
+      </g>
+      <rect x="22" y="128" width="20" height="42" fill="#0d2240" />
+      <rect x="350" y="128" width="20" height="42" fill="#0d2240" />
+      <path d="M220 0c-14 0-25 11-25 25 0 19 25 43 25 43s25-24 25-43c0-14-11-25-25-25z" fill="#f47732" />
+      <circle cx="220" cy="25" r="8" fill="#0d2240" />
+    </svg>
+  </aside>
+
+  <section class="auth-main">
+    <header class="auth-top">
+      <a class="back" [routerLink]="backLink()">← {{ backLabel() }}</a>
+      <ng-content select="[shellTopRight]" />
+    </header>
+    <div class="auth-body">
+      <ng-content />
+    </div>
+  </section>
+</div>
