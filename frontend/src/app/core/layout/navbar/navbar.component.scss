@@ -14,5 +14,7 @@
 .menu a, .menu button { display:block; width:100%; padding:11px 14px; border:0; border-radius:10px; background:none; color:#0b2343; font:inherit; font-size:13px; font-weight:600; text-align:left; text-decoration:none; cursor:pointer; }
 .menu a:hover, .menu button:hover, .menu a:focus-visible, .menu button:focus-visible { background:#eaf0f9; outline:none; }
 .menu .logout { margin-top:4px; border-top:1px solid #e3e8f0; border-radius:0 0 10px 10px; color:#b5321f; }
+.menu .soon { display:flex; justify-content:space-between; align-items:center; padding:11px 14px; color:#8a94a6; font-size:13px; font-weight:600; cursor:default; }
+.menu .soon small { padding:2px 8px; border-radius:999px; background:#eef1f6; font-size:11px; font-weight:700; }
 @media(max-width:900px) { .site-header { flex-wrap:wrap; padding-block:18px; } .main-nav { order:3; width:100%; justify-content:center; gap:22px; } }
 @media(max-width:650px) { .site-header { min-height:auto; gap:12px; } .header-cta { min-height:36px; padding-inline:13px; } .main-nav { justify-content:flex-start; overflow-x:auto; padding:8px 0 11px; gap:21px; white-space:nowrap; } .main-nav a { font-size:11px; } }

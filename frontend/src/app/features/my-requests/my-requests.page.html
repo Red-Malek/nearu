@@ -1,0 +1,51 @@
+<div class="wrap">
+  <header class="head">
+    <div>
+      <p class="eyebrow">Mon espace client</p>
+      <h1>Mes demandes</h1>
+      <p class="lead">Suivez chacune de vos demandes et répondez aux devis reçus.</p>
+    </div>
+    <a class="btn orange" routerLink="/prestataires">Nouvelle demande</a>
+  </header>
+
+  @switch (state()) {
+    @case ('loading') {
+      <p class="muted">Chargement de vos demandes…</p>
+    }
+    @case ('error') {
+      <p class="alert" role="alert">{{ error() }}</p>
+      <button class="btn" type="button" (click)="load()">Réessayer</button>
+    }
+    @case ('ready') {
+      @if (requests().length === 0) {
+        <div class="card empty">
+          <h2>Vous n’avez encore envoyé aucune demande</h2>
+          <p class="muted">Trouvez un prestataire, ouvrez son profil puis cliquez sur « Envoyer une demande ».</p>
+          <a class="btn" routerLink="/prestataires">Trouver un prestataire</a>
+        </div>
+      } @else {
+        <ul class="list">
+          @for (r of requests(); track r.id) {
+            <li>
+              <a class="card item" [routerLink]="['/mes-demandes', r.id]" [class.todo]="r.status === 'QUOTED'">
+                <div class="item-main">
+                  <h2>{{ r.title }}</h2>
+                  <p class="muted">{{ r.serviceName }} · {{ r.professionalName }} · envoyée le {{ day(r.createdAt) }}</p>
+                  @if (r.status === 'QUOTED') {
+                    <p class="todo-t">Devis reçu : {{ tnd(r.quoteAmount) }}. Votre réponse est attendue.</p>
+                  } @else if (r.quoteAmount !== null) {
+                    <p class="muted">Devis : {{ tnd(r.quoteAmount) }}</p>
+                  }
+                </div>
+                <div class="item-side">
+                  <span class="pill" [class]="'pill ' + tone(r.status)">Statut : {{ r.statusLabel }}</span>
+                  <span class="see" aria-hidden="true">Voir le détail →</span>
+                </div>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+</div>

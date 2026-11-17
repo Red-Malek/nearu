@@ -9,6 +9,10 @@ public enum ServiceRequestStatus {
     ACCEPTED("Acceptée"),
     REJECTED("Refusée"),
     QUOTED("Devis envoyé"),
+    /** Le client a accepté le devis (US09, migration V6). */
+    QUOTE_ACCEPTED("Devis accepté"),
+    /** Le client a refusé le devis (US09, migration V6). */
+    QUOTE_REJECTED("Devis refusé"),
     SCHEDULED("Planifiée"),
     COMPLETED("Terminée"),
     CANCELLED("Annulée"),

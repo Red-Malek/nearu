@@ -65,6 +65,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/service-requests/target/**").permitAll()
                 // … mais seul un client connecté peut envoyer une demande
                 .requestMatchers(HttpMethod.POST, "/api/service-requests").hasRole("CUSTOMER")
+                // US09 / US10 : suivi des demandes et décision sur le devis, client uniquement
+                .requestMatchers("/api/service-requests/mine", "/api/service-requests/mine/**").hasRole("CUSTOMER")
                 // Demandes reçues : tableau de bord du prestataire
                 .requestMatchers(HttpMethod.GET, "/api/service-requests/received").hasRole("PROFESSIONAL")
                 // US02 : paramètres du commerce du prestataire connecté

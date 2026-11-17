@@ -23,7 +23,10 @@
             <li role="none"><a role="menuitem" routerLink="/mon-commerce/parametres" (click)="close()">Paramètres</a></li>
             <li role="none"><a role="menuitem" routerLink="/mon-commerce/dashboard" (click)="close()">Dashboard</a></li>
           } @else {
-            <li role="none"><a role="menuitem" routerLink="/prestataires" (click)="close()">Trouver un prestataire</a></li>
+            <!-- « Mon profil » et « Mes messages » n'ont pas encore de page : affichés mais inactifs. -->
+            <li role="none"><span role="menuitem" class="soon" aria-disabled="true">Mon profil <small>Bientôt</small></span></li>
+            <li role="none"><a role="menuitem" routerLink="/mes-demandes" (click)="close()">Mes demandes</a></li>
+            <li role="none"><span role="menuitem" class="soon" aria-disabled="true">Mes messages <small>Bientôt</small></span></li>
           }
           <li role="none"><button type="button" role="menuitem" class="logout" (click)="logout()">Déconnexion</button></li>
         </ul>
