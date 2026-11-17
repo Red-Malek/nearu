@@ -1,0 +1,190 @@
+<div class="request-page">
+  <div class="wrap">
+    <header>
+      <app-logo />
+      <a class="back" routerLink="/">← Retour à l’accueil</a>
+    </header>
+
+    <div class="hero">
+      <div>
+        <h1>Envoyer une <span>demande</span></h1>
+        <p class="sub">Décrivez votre besoin, dites quand et où : votre demande part directement au prestataire choisi.</p>
+      </div>
+      <svg viewBox="0 0 96 96" aria-hidden="true">
+        <circle cx="46" cy="52" r="42" fill="#e8eefb" />
+        <rect x="28" y="22" width="34" height="46" rx="6" fill="none" stroke="#1f3f8f" stroke-width="3.5" />
+        <rect x="39" y="17" width="12" height="9" rx="3" fill="#1f3f8f" />
+        <path d="M35 38h20M35 46h20M35 54h10" stroke="#8fa6e0" stroke-width="3" stroke-linecap="round" />
+        <circle cx="60" cy="58" r="10" fill="var(--card)" stroke="#0f2342" stroke-width="3.5" />
+        <path d="M67 66l9 9" stroke="#0f2342" stroke-width="4" stroke-linecap="round" />
+        <path d="M78 12l-10 4 5 3 2 5z" fill="#f47b20" />
+      </svg>
+    </div>
+
+    <div class="card">
+      @switch (state()) {
+        @case ('loading') {
+          <p class="sub center">Chargement du prestataire…</p>
+        }
+        @case ('missing') {
+          <div class="empty">
+            <h2>Choisissez d’abord un prestataire</h2>
+            <p class="sub">Une demande est envoyée à un prestataire précis : ouvrez son profil puis cliquez sur « Envoyer une demande ».</p>
+            <a class="submit as-link" routerLink="/prestataires">Trouver un prestataire</a>
+          </div>
+        }
+        @case ('error') {
+          <div class="empty">
+            <h2>Prestataire indisponible</h2>
+            <p class="sub">{{ loadError() }}</p>
+            <a class="submit as-link" routerLink="/prestataires">Choisir un autre prestataire</a>
+          </div>
+        }
+        @case ('ready') {
+          @if (created(); as request) {
+            <div class="done" role="status">
+              <div class="ok">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+              </div>
+              <h2>Demande envoyée</h2>
+              <p class="sub">{{ request.professionalName }} a bien reçu votre demande et vous répondra très vite.</p>
+              <div class="recap">
+                @for (row of recap(); track row.label) {
+                  <div><span>{{ row.label }}</span><b>{{ row.value }}</b></div>
+                }
+              </div>
+              <p><button class="geo" type="button" (click)="startAgain()">Envoyer une autre demande</button></p>
+            </div>
+          } @else {
+            <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+              @if (!isLoggedIn()) {
+                <div class="notice">
+                  <span>Vous devez être connecté avec un compte client pour envoyer une demande.</span>
+                  <button type="button" (click)="goToLogin()">Se connecter</button>
+                </div>
+              }
+
+              @if (target(); as t) {
+                <div class="prov">
+                  <div class="av" aria-hidden="true">{{ initials() }}</div>
+                  <div>
+                    <div class="pl">Votre demande est pour</div>
+                    <div class="pn">{{ t.displayName }}</div>
+                    <div class="pj">{{ targetDetails() }}</div>
+                  </div>
+                </div>
+                @if (!t.acceptingRequests) {
+                  <p class="alert">Ce prestataire n’accepte pas de nouvelles demandes pour le moment.</p>
+                }
+
+                <section>
+                  <h2><i>1</i>Votre problème</h2>
+                  <div class="row">
+                    <div class="f" [class.bad]="fieldError('categoryId')">
+                      <label for="cat">Service concerné <em>*</em></label>
+                      <select id="cat" formControlName="categoryId">
+                        <option value="">Choisir un service</option>
+                        @for (s of t.services; track s.id) {
+                          <option [value]="s.id">{{ s.name }}</option>
+                        }
+                        <option [value]="other">Autre</option>
+                      </select>
+                      <div class="err">{{ fieldError('categoryId') }}</div>
+                    </div>
+                    <div class="f" [class.bad]="fieldError('title')">
+                      <label for="title">Titre de votre demande <em>*</em></label>
+                      <input id="title" formControlName="title" [maxlength]="limits.titleMax" placeholder="Ex : Fuite d’eau sous l’évier" />
+                      <div class="err">{{ fieldError('title') }}</div>
+                    </div>
+                  </div>
+                  @if (isOther()) {
+                    <div class="f" [class.bad]="fieldError('otherCategory')">
+                      <label for="other">Précisez le service <em>*</em></label>
+                      <input id="other" formControlName="otherCategory" [maxlength]="limits.otherCategoryMax" placeholder="Ex : Vitrerie" />
+                      <div class="err">{{ fieldError('otherCategory') }}</div>
+                    </div>
+                  }
+                  <div class="f" [class.bad]="fieldError('description')">
+                    <label for="desc">Décrivez le problème <em>*</em></label>
+                    <textarea id="desc" formControlName="description" [maxlength]="limits.descriptionMax"
+                      placeholder="Que se passe-t-il ? Depuis quand ? Précisez la marque, l’appareil ou tout détail utile…"></textarea>
+                    <div class="count">{{ descriptionLength() }} / {{ limits.descriptionMax }}</div>
+                    <div class="err">{{ fieldError('description') }}</div>
+                  </div>
+                </section>
+
+                <section>
+                  <h2><i>2</i>Quand souhaitez-vous son arrivée ?</h2>
+                  <div class="chips" role="radiogroup" aria-label="Délai souhaité">
+                    @for (choice of timings; track choice.value) {
+                      <label class="chip" [class.urgent]="choice.value === 'URGENT'">
+                        <input type="radio" formControlName="timing" [value]="choice.value" />
+                        <span>{{ choice.label }}<small>{{ choice.hint }}</small></span>
+                      </label>
+                    }
+                  </div>
+                  @if (isScheduled()) {
+                    <div class="row when">
+                      <div class="f" [class.bad]="fieldError('preferredDate')">
+                        <label for="date">Date <em>*</em></label>
+                        <input type="date" id="date" formControlName="preferredDate" [min]="today" />
+                        <div class="err">{{ fieldError('preferredDate') }}</div>
+                      </div>
+                      <div class="f">
+                        <label for="time">Heure <small>(optionnel)</small></label>
+                        <input type="time" id="time" formControlName="preferredTime" />
+                      </div>
+                    </div>
+                  }
+                </section>
+
+                <section>
+                  <h2><i>3</i>Où doit-il intervenir ?</h2>
+                  <button type="button" class="geo" (click)="useMyPosition()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="3" /><circle cx="12" cy="12" r="8" /><path d="M12 1v3M12 20v3M1 12h3M20 12h3" /></svg>
+                    Utiliser ma position actuelle
+                  </button>
+                  <div class="hint" [class.ok]="geoHint()?.tone === 'ok'" [class.muted]="geoHint()?.tone === 'muted'" [class.ko]="geoHint()?.tone === 'err'" aria-live="polite">{{ geoHint()?.text }}</div>
+                  <div class="row">
+                    <div class="f" [class.bad]="fieldError('governorateId')">
+                      <label for="gov">Gouvernorat <em>*</em></label>
+                      <select id="gov" formControlName="governorateId">
+                        <option value="">Votre gouvernorat</option>
+                        @for (g of governorates(); track g.id) {
+                          <option [value]="g.id">{{ g.name }}</option>
+                        }
+                      </select>
+                      <div class="err">{{ fieldError('governorateId') }}</div>
+                    </div>
+                    <div class="f" [class.bad]="fieldError('addressLine')">
+                      <label for="addr">Adresse de l’intervention <em>*</em></label>
+                      <input id="addr" formControlName="addressLine" [maxlength]="limits.addressMax" placeholder="Ex : 12 rue de Marseille, La Marsa" />
+                      <div class="err">{{ fieldError('addressLine') }}</div>
+                    </div>
+                  </div>
+                  <div class="f" [class.bad]="fieldError('addressNote')">
+                    <label for="note">Repère pour trouver l’adresse <small>(optionnel)</small></label>
+                    <input id="note" formControlName="addressNote" [maxlength]="limits.addressNoteMax" placeholder="Ex : 2e étage, en face de la pharmacie" />
+                    <div class="err">{{ fieldError('addressNote') }}</div>
+                  </div>
+                </section>
+
+                @if (errorMessage(); as message) {
+                  <p class="alert" role="alert">{{ message }}</p>
+                }
+                @if (loadError(); as message) {
+                  <p class="alert" role="alert">{{ message }}</p>
+                }
+
+                <button class="submit" type="submit" [disabled]="submitting() || !t.acceptingRequests">
+                  {{ submitting() ? 'Envoi en cours…' : 'Envoyer à ' + firstName() }}
+                </button>
+                <p class="fine">Gratuit et sans engagement. Seul ce prestataire reçoit votre demande.</p>
+              }
+            </form>
+          }
+        }
+      }
+    </div>
+  </div>
+</div>

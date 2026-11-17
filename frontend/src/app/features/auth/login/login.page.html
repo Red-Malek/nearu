@@ -1,0 +1,111 @@
+<app-auth-shell
+  titleStart="Bon retour parmi"
+  titleAccent="nous."
+  subtitle="Retrouvez les commerces et les prestataires de votre quartier, à portée de clic."
+  [items]="[
+    'Retrouvez vos commerces et prestataires',
+    'Consultez horaires, adresses et contacts',
+    'Gérez votre fiche si vous êtes commerçant'
+  ]"
+>
+  <p shellTopRight class="top-link">
+    Pas encore de compte ? <a routerLink="/inscription">Créer un compte</a>
+  </p>
+
+  <div class="auth-card">
+    <h1>Connexion</h1>
+    <p class="lead">Entrez vos identifiants pour accéder à votre compte.</p>
+
+    @if (auth.configError; as configError) {
+      <p class="alert alert-error" role="alert">{{ configError }}</p>
+    } @else if (auth.linkError; as linkError) {
+      <p class="alert alert-error" role="alert">{{ linkError }}</p>
+    } @else if (auth.sessionProblem(); as problem) {
+      <p class="alert alert-error" role="alert">{{ problem }}</p>
+    } @else if (returnUrl()) {
+      <p class="alert alert-info" role="status">
+        Connectez-vous avec votre compte client pour accéder à cette page.
+      </p>
+    }
+
+    @if (reset() === 'success') {
+      <p class="alert alert-success" role="status">
+        Votre mot de passe a été modifié. Connectez-vous avec le nouveau.
+      </p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label for="login-email">E-mail</label>
+        <input
+          id="login-email"
+          type="email"
+          formControlName="email"
+          placeholder="votre@email.com"
+          autocomplete="email"
+          [class.invalid]="showError('email')"
+          [attr.aria-invalid]="showError('email')"
+        />
+        @if (showError('email')) {
+          <span class="error-text">
+            {{ form.controls.email.hasError('required') ? 'L’e-mail est obligatoire.' : 'Adresse e-mail invalide.' }}
+          </span>
+        }
+      </div>
+
+      <div class="field">
+        <div class="label-row">
+          <label for="login-password">Mot de passe</label>
+          <a routerLink="/forgot-password">Mot de passe oublié?</a>
+        </div>
+        <input
+          id="login-password"
+          type="password"
+          formControlName="password"
+          placeholder="Votre mot de passe"
+          autocomplete="current-password"
+          [class.invalid]="showError('password')"
+          [attr.aria-invalid]="showError('password')"
+        />
+        @if (showError('password')) {
+          <span class="error-text">Le mot de passe est obligatoire.</span>
+        }
+      </div>
+
+      <label class="checkbox">
+        <input type="checkbox" formControlName="rememberMe" />
+        Se souvenir de moi
+      </label>
+
+      @if (errorMessage(); as message) {
+        <p class="alert alert-error" role="alert">{{ message }}</p>
+      }
+      @if (unconfirmedEmail()) {
+        @if (resendState() === 'sent') {
+          <p class="alert alert-success" role="status">
+            E-mail de vérification renvoyé à {{ unconfirmedEmail() }}. Pensez aux courriers indésirables.
+          </p>
+        } @else {
+          <button class="link-center as-link" type="button" (click)="resendConfirmation()"
+            [disabled]="resendState() === 'sending'">
+            {{ resendState() === 'sending' ? 'Envoi…' : 'Renvoyer l’e-mail de vérification' }}
+          </button>
+        }
+      }
+
+      <button class="btn-primary" type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Connexion…' : 'Se connecter' }}
+      </button>
+    </form>
+
+    <div class="divider"><span>ou</span></div>
+
+    <a class="pro-cta" routerLink="/inscription" [queryParams]="{ type: 'prestataire' }">
+      <span>
+        <strong>Vous êtes commerçant ou prestataire ?</strong>
+        <small>Inscrivez votre commerce sur nearU</small>
+      </span>
+      <span aria-hidden="true">→</span>
+    </a>
+  </div>
+</app-auth-shell>

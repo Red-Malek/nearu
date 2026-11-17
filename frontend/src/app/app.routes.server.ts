@@ -3,6 +3,12 @@ import { RenderMode, ServerRoute } from '@angular/ssr';
 export const serverRoutes: ServerRoute[] = [
   { path: 'prestataires', renderMode: RenderMode.Client },
   { path: 'prestataires/:id', renderMode: RenderMode.Client },
+  // Pages liées à la session de l'utilisateur : rendues uniquement dans le navigateur
+  { path: 'login', renderMode: RenderMode.Client },
+  { path: 'inscription', renderMode: RenderMode.Client },
+  { path: 'forgot-password', renderMode: RenderMode.Client },
+  { path: 'reset-password', renderMode: RenderMode.Client },
+  { path: 'demandes/nouvelle', renderMode: RenderMode.Client },
   {
     path: '**',
     renderMode: RenderMode.Prerender,

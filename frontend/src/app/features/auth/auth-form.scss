@@ -1,0 +1,147 @@
+// Styles partagés par les formulaires d'authentification (inclus via styleUrls).
+:host {
+  --navy: #0d2240;
+  --orange: #f47732;
+  --blue: #1f5fbf;
+  --field: #edf1fa;
+  display: block;
+}
+
+.top-link {
+  color: #5d6b80;
+  font-size: 12px;
+  a { color: var(--blue); font-weight: 700; }
+}
+
+.auth-card { width: min(100%, 340px); }
+
+.auth-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+  border-radius: 12px;
+  background: var(--field);
+  color: var(--navy);
+  font-size: 20px;
+}
+
+h1 {
+  margin: 0 0 6px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 34px;
+  line-height: 1.1;
+  color: var(--navy);
+}
+
+.lead { margin: 0 0 22px; color: #5d6b80; font-size: 13px; line-height: 1.55; }
+
+form,
+.actions { display: grid; gap: 14px; }
+
+.field { display: grid; gap: 6px; }
+
+.label-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+
+label,
+.label {
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.label-row a { color: var(--blue); font-size: 11px; font-weight: 700; text-decoration: none; }
+
+input[type='email'],
+input[type='password'],
+input[type='text'] {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+  outline: none;
+  background: var(--field);
+  color: var(--navy);
+  font-size: 13px;
+  transition: border-color 0.15s, background 0.15s;
+  &::placeholder { color: #8a96aa; }
+  &:focus { border-color: var(--blue); background: #fff; }
+  &.invalid { border-color: #d6453d; background: #fff6f5; }
+}
+
+.error-text { color: #c0362e; font-size: 11.5px; font-weight: 600; }
+.hint { color: #6b778a; font-size: 11px; }
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #33415a;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  cursor: pointer;
+  input { width: 15px; height: 15px; margin: 0; accent-color: var(--navy); }
+}
+
+.alert {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  &.alert-error { background: #fdecea; color: #a02a22; }
+  &.alert-success { background: #e7f6ec; color: #1f6b3b; }
+  &.alert-info { background: #eaf1fd; color: #1d3f8f; }
+}
+
+.btn-primary {
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.15s;
+  &:hover:not(:disabled) { transform: translateY(-1px); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.link-center {
+  justify-self: center;
+  color: var(--blue);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.note {
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fff1e6;
+  color: #5d6b80;
+  font-size: 11.5px;
+  line-height: 1.5;
+  strong { color: var(--navy); }
+}
+
+.as-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btn-link {
+  display: grid;
+  place-items: center;
+  text-decoration: none;
+}

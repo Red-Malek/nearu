@@ -6,3 +6,7 @@
 .header-cta { min-height:40px; padding-inline:18px; font-size:12px; }
 @media(max-width:900px) { .site-header { flex-wrap:wrap; padding-block:18px; } .main-nav { order:3; width:100%; justify-content:center; gap:22px; } }
 @media(max-width:650px) { .site-header { min-height:auto; gap:12px; } .header-cta { min-height:36px; padding-inline:13px; } .main-nav { justify-content:flex-start; overflow-x:auto; padding:8px 0 11px; gap:21px; white-space:nowrap; } .main-nav a { font-size:11px; } }
+.account { display:flex; align-items:center; gap:12px; }
+.account-name { display:inline-flex; align-items:center; gap:8px; max-width:180px; overflow:hidden; color:#183b30; font-size:12px; font-weight:700; white-space:nowrap; text-overflow:ellipsis; }
+.initials { width:30px; height:30px; display:grid; place-items:center; flex-shrink:0; border-radius:50%; background:#112d27; color:#fff; font-size:11px; }
+@media(max-width:650px) { .account-name { display:none; } }

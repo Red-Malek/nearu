@@ -28,7 +28,7 @@
               <p class="city"><span aria-hidden="true">⌖</span> {{ p.city }}</p>
             }
           </div>
-          <button type="button" class="request">Envoyer une demande</button>
+          <a class="request" routerLink="/demandes/nouvelle" [queryParams]="{ professionalId: p.id }">Envoyer une demande</a>
         </header>
 
         <h2>À <em>propos</em></h2>

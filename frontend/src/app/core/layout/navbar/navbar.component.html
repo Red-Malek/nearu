@@ -7,5 +7,15 @@
     <a routerLink="/" fragment="providers">Prestataires</a>
     <a routerLink="/" fragment="contact">Contact</a>
   </nav>
-  <a class="button button-dark header-cta" routerLink="/" fragment="contact">Connexion <span>↗</span></a>
+  @if (auth.currentUser(); as user) {
+    <div class="account">
+      <span class="account-name" [title]="user.fullName">
+        <span class="initials" aria-hidden="true">{{ initials(user.fullName) }}</span>
+        {{ user.fullName }}
+      </span>
+      <button type="button" class="button button-dark header-cta" (click)="logout()">Déconnexion</button>
+    </div>
+  } @else {
+    <a class="button button-dark header-cta" routerLink="/login">Connexion <span>↗</span></a>
+  }
 </header>

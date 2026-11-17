@@ -1,0 +1,39 @@
+// Suite des styles de l'écran « Envoyer une demande » : délai (chips), états vide / envoyé, mobile.
+// Séparé de send-request.page.scss pour respecter le budget de 8 kB par feuille de style.
+:host {
+  --orange: #f47b20; --muted: #5b6679; --bg: #f7f9fc; --line: #e3e8f0; --peach: #fff0e5; --field: #fff;
+}
+h2 { display: flex; align-items: center; gap: 12px; }
+.chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.chip { position: relative; margin: 0; }
+.chip input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; cursor: pointer; margin: 0; }
+.chip span { display: block; height: 100%; text-align: center; border: 1.5px solid var(--line); border-radius: 14px; padding: 14px 8px; background: var(--field); font-weight: 700; font-size: 14px; transition: all .15s; }
+.chip span small { display: block; font-weight: 500; color: var(--muted); font-size: 12px; margin-top: 2px; }
+.chip input:checked + span { border-color: var(--orange); background: var(--peach); box-shadow: inset 0 0 0 1px var(--orange); }
+.chip.urgent input:checked + span { background: var(--orange); color: #fff; }
+.chip.urgent input:checked + span small { color: #fff; }
+.when { margin-top: 14px; }
+.when .f { margin: 0; }
+.empty { text-align: center; padding: 20px 10px; }
+.empty h2 { justify-content: center; }
+.empty .sub { margin: 0 auto 22px; }
+.empty .submit { max-width: 320px; margin: 0 auto; }
+.done { text-align: center; padding: 36px 10px; }
+.done .ok { width: 72px; height: 72px; border-radius: 50%; background: var(--orange); display: grid; place-items: center; margin: 0 auto 18px; animation: pop .35s ease; }
+.done h2 { justify-content: center; font-size: 28px; margin-bottom: 8px; }
+.done .sub { margin: 0 auto; }
+.recap { text-align: left; background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; margin: 22px auto 0; max-width: 480px; font-size: 14px; }
+.recap div { display: flex; justify-content: space-between; gap: 16px; padding: 6px 0; }
+.recap div + div { border-top: 1px solid var(--line); }
+.recap span { color: var(--muted); }
+.recap b { text-align: right; }
+.done .geo { margin-top: 22px; }
+@keyframes pop { from { transform: scale(.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+@media (max-width: 640px) {
+  .row { grid-template-columns: 1fr; }
+  .chips { grid-template-columns: 1fr 1fr; }
+  .hero svg { display: none; }
+  .card { padding: 20px 16px; border-radius: 20px; }
+  .notice { flex-direction: column; align-items: flex-start; }
+}

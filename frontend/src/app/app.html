@@ -1,7 +1,11 @@
 <div class="site-shell">
-  <app-navbar />
+  @if (!fullscreen()) {
+    <app-navbar />
+  }
   <main id="top">
     <router-outlet />
   </main>
-  <app-footer />
+  @if (!fullscreen()) {
+    <app-footer />
+  }
 </div>
