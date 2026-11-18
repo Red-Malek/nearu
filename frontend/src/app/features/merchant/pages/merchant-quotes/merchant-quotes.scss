@@ -1,0 +1,78 @@
+.quotes-page {
+  padding: 24px;
+}
+
+.page-header {
+  margin-bottom: 28px;
+
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: #777;
+    font-size: 14px;
+  }
+}
+
+.message,
+.empty-state {
+  padding: 30px;
+  text-align: center;
+  background: #fff;
+  border-radius: 12px;
+  color: #777;
+}
+
+.error {
+  color: #dc3545;
+}
+
+.empty-state h3 {
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.quotes-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.quote-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.quote-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+
+  h3 {
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+.status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #fff3cd;
+  color: #856404;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.quote-details p {
+  margin: 10px 0;
+  font-size: 14px;
+  color: #555;
+}

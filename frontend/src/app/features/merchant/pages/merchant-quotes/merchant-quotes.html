@@ -1,0 +1,36 @@
+<div class="quotes-page">
+  <div class="page-header">
+    <h1>Mes devis</h1>
+    <p>Consultez et gérez les devis envoyés à vos clients.</p>
+  </div>
+
+  <div *ngIf="loading" class="message">
+    Chargement des devis...
+  </div>
+
+  <div *ngIf="error" class="message error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error && quotes.length === 0" class="empty-state">
+    <h3>Aucun devis pour le moment</h3>
+    <p>Les devis que vous envoyez apparaîtront ici.</p>
+  </div>
+
+  <div *ngIf="!loading && !error && quotes.length > 0" class="quotes-list">
+    <div class="quote-card" *ngFor="let quote of quotes">
+      <div class="quote-header">
+        <h3>Devis #{{ quote.id.slice(0, 8) }}</h3>
+        <span class="status">{{ quote.status }}</span>
+      </div>
+
+      <div class="quote-details">
+        <p><strong>Montant :</strong> {{ quote.amount }} DT</p>
+        <p><strong>Date proposée :</strong> {{ quote.proposedStart | date:'dd/MM/yyyy HH:mm' }}</p>
+        <p><strong>Durée estimée :</strong> {{ quote.estimatedDurationMinutes }} minutes</p>
+        <p><strong>Valable jusqu'au :</strong> {{ quote.validUntil | date:'dd/MM/yyyy HH:mm' }}</p>
+        <p><strong>Date d'envoi :</strong> {{ quote.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
+    </div>
+  </div>
+</div>
