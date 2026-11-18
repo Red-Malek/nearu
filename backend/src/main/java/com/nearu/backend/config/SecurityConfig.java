@@ -72,6 +72,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/service-requests/*/quotes").hasRole("PROFESSIONAL")
                 // US02 : paramètres du commerce du prestataire connecté
                 .requestMatchers("/api/professional/**").hasRole("PROFESSIONAL")
+                .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                 .anyRequest().authenticated())
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter))
