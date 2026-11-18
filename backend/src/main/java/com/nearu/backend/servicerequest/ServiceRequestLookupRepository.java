@@ -103,7 +103,8 @@ public class ServiceRequestLookupRepository {
                 JOIN users cu ON cu.id = r.customer_id
                 JOIN service_categories c ON c.id = r.category_id
                 JOIN governorates g ON g.id = r.governorate_id
-                WHERE r.professional_id = :professionalId
+               WHERE r.professional_id = :professionalId
+  AND r.status IN ('SUBMITTED', 'QUOTED')
                 ORDER BY r.created_at DESC
                 """)
             .param("professionalId", professionalId)

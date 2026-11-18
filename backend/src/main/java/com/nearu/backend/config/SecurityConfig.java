@@ -69,8 +69,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/service-requests/mine", "/api/service-requests/mine/**").hasRole("CUSTOMER")
                 // Demandes reçues : tableau de bord du prestataire
                 .requestMatchers(HttpMethod.GET, "/api/service-requests/received").hasRole("PROFESSIONAL")
+                .requestMatchers(HttpMethod.GET, "/api/service-requests/quotes").hasRole("PROFESSIONAL")
+                .requestMatchers(HttpMethod.PATCH, "/api/service-requests/*/reject").hasRole("PROFESSIONAL")
+                .requestMatchers(HttpMethod.POST, "/api/service-requests/*/quotes").hasRole("PROFESSIONAL")
                 // US02 : paramètres du commerce du prestataire connecté
                 .requestMatchers("/api/professional/**").hasRole("PROFESSIONAL")
+                .requestMatchers("/api/customer/**").hasRole("CUSTOMER")
                 .anyRequest().authenticated())
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter))

@@ -1,0 +1,94 @@
+.page-heading h1,
+.sidebar h2 {
+    font-family: 'Playfair Display', serif;
+}
+.page-heading {
+    margin-bottom: 25px;
+}
+
+.breadcrumb {
+    color: #888;
+    font-size: 12px;
+}
+
+.page-heading h1 {
+    font-family: Georgia, serif;
+    font-size: 40px;
+    color: #10203d;
+    margin: 10px 0;
+}
+
+.page-heading h1 span {
+    color: #f58232;
+}
+
+.page-heading .description {
+    color: #777;
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 450px;
+}
+
+/* ===== ORGANISATION PRINCIPALE ===== */
+
+.account-layout {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+}
+
+/* ===== SIDEBAR ===== */
+
+.sidebar {
+    width: 200px;
+    flex-shrink: 0;
+    background-color: transparent;
+    padding: 0;
+}
+
+.sidebar h2 {
+    font-size: 20px;
+    color: #10203d;
+    margin-bottom: 20px;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar-menu a {
+    text-decoration: none;
+    color: #555;
+    font-size: 14px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    transition: 0.2s;
+      display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sidebar-menu svg {
+  width: 19px;
+  height: 19px;
+  stroke-width: 1.8;
+  flex-shrink: 0;
+}
+
+.sidebar-menu a.active {
+    background-color: #10203d;
+    color: white;
+}
+
+.sidebar-menu a:hover {
+    background-color: #edf2fb;
+    color: #10203d;
+}
+.sidebar-menu a {
+    font-family: 'Inter', sans-serif;
+}
+.page-content {
+    flex: 1;
+    min-width: 0;
+}

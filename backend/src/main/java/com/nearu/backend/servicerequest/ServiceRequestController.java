@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 import com.nearu.backend.servicerequest.dto.CreateServiceRequestRequest;
 import com.nearu.backend.servicerequest.dto.ReceivedRequestResponse;
@@ -56,4 +57,14 @@ public class ServiceRequestController {
     public List<ReceivedRequestResponse> received(@AuthenticationPrincipal Jwt jwt) {
         return service.findReceived(UUID.fromString(jwt.getSubject()));
     }
+    @PatchMapping("/{requestId}/reject")
+public ResponseEntity<Void> reject(
+        @AuthenticationPrincipal Jwt jwt,
+        @PathVariable UUID requestId) {
+
+    UUID professionalId = UUID.fromString(jwt.getSubject());
+    service.reject(professionalId, requestId);
+
+    return ResponseEntity.noContent().build();
+}
 }

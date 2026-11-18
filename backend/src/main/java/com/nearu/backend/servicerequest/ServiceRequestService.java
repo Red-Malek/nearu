@@ -58,7 +58,21 @@ public class ServiceRequestService {
     public List<ReceivedRequestResponse> findReceived(UUID professionalId) {
         return lookupRepository.findReceived(professionalId);
     }
+@Transactional
+public void reject(UUID professionalId, UUID requestId) {
+    ServiceRequest request = serviceRequestRepository.findById(requestId)
+        .orElseThrow(() -> ApiException.notFound("Demande introuvable."));
 
+    if (!request.getProfessionalId().equals(professionalId)) {
+        throw ApiException.notFound("Demande introuvable.");
+    }
+
+    try {
+        request.reject();
+    } catch (IllegalStateException ex) {
+        throw ApiException.conflict(ex.getMessage());
+    }
+}
     /**
      * Crée la demande au statut SUBMITTED (« En attente »), adressée au seul prestataire choisi.
      *

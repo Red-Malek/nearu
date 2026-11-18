@@ -13,6 +13,11 @@ export const serverRoutes: ServerRoute[] = [
   { path: 'mes-demandes/:id', renderMode: RenderMode.Client },
   { path: 'mon-commerce/parametres', renderMode: RenderMode.Client },
   { path: 'mon-commerce/dashboard', renderMode: RenderMode.Client },
+  // Pages personnelles et espace commerçant
+{ path: 'account', renderMode: RenderMode.Client },
+{ path: 'account/**', renderMode: RenderMode.Client },
+{ path: 'merchant-dashboard', renderMode: RenderMode.Client },
+{ path: 'merchant-dashboard/**', renderMode: RenderMode.Client },
   {
     path: '**',
     renderMode: RenderMode.Prerender,

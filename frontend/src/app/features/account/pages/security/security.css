@@ -1,0 +1,154 @@
+.security-card {
+  background-color: white;
+  border: 1px solid #e0e3e8;
+  border-radius: 28px;
+  padding: 36px 33px 32px;
+}
+
+.security-header h2 {
+  font-family: Georgia, serif;
+  font-size: 29px;
+  color: #10203d;
+  margin: 0 0 10px;
+}
+
+.security-header p {
+  color: #737f91;
+  font-size: 15px;
+  margin: 0 0 28px;
+}
+
+.security-card h4 {
+  color: #10203d;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 5px;
+}
+
+.security-card p {
+  color: #737f91;
+  font-size: 13px;
+  margin: 0;
+}
+.password-section {
+  padding: 0 0 19px;
+  border-bottom: 1px solid #e0e3e8;
+}
+
+.password-section h4 {
+  color: #405d85;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.outline-button {
+  background-color: white;
+  border: 1px solid #10203d;
+  border-radius: 25px;
+  padding: 12px 21px;
+  color: #10203d;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.outline-button:hover {
+  background-color: #10203d;
+  color: white;
+}
+.security-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 0;
+  border-bottom: 1px solid #e0e3e8;
+}
+
+.security-info {
+  flex: 1;
+}
+
+.security-info h4 {
+  margin-bottom: 5px;
+}
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 25px;
+  flex-shrink: 0;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #b8c2d1;
+  border-radius: 25px;
+  transition: 0.3s;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  width: 19px;
+  height: 19px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.toggle input:checked + .slider {
+  background-color: #f58232;
+}
+
+.toggle input:checked + .slider::before {
+  transform: translateX(21px);
+}
+.delete-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #fdf4f3;
+  border: 1px solid #efd2cf;
+  border-radius: 20px;
+}
+
+.delete-section h4 {
+  margin-bottom: 5px;
+}
+
+.delete-section p + p {
+  margin-top: 3px;
+}
+
+.delete-button {
+  background-color: white;
+  border: 1px solid #bd625b;
+  border-radius: 25px;
+  padding: 13px 21px;
+  color: #b8423b;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.delete-button:hover {
+  background-color: #b8423b;
+  color: white;
+}
