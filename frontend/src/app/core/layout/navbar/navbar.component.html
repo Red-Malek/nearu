@@ -22,8 +22,9 @@
           @if (me.role === 'PROFESSIONAL') {
             <li role="none"><a role="menuitem" routerLink="/mon-commerce/parametres" (click)="close()">Paramètres</a></li>
             <li role="none"><a role="menuitem" routerLink="/merchant-dashboard" (click)="close()">Dashboard</a></li>
-          } @else {
+                   } @else {
             <li role="none"><a role="menuitem" routerLink="/prestataires" (click)="close()">Trouver un prestataire</a></li>
+            <li role="none"><a role="menuitem" routerLink="/account" (click)="close()">Paramètres</a></li>
           }
           <li role="none"><button type="button" role="menuitem" class="logout" (click)="logout()">Déconnexion</button></li>
         </ul>

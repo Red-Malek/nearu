@@ -1,4 +1,3 @@
-
 <div class="location-card">
 
     <h2>Localisation</h2>
@@ -17,6 +16,7 @@
                 type="text"
                 id="address"
                 [(ngModel)]="address"
+                [disabled]="loading"
                 placeholder="Entrez votre adresse">
         </div>
 
@@ -29,6 +29,7 @@
                     type="text"
                     id="postalCode"
                     [(ngModel)]="postalCode"
+                    [disabled]="loading"
                     placeholder="8000">
             </div>
 
@@ -38,6 +39,7 @@
                     type="text"
                     id="city"
                     [(ngModel)]="city"
+                    [disabled]="loading"
                     placeholder="Nabeul">
             </div>
 
@@ -47,7 +49,7 @@
         <div class="form-group">
             <label for="radius">Rayon de recherche par défaut</label>
 
-            <select id="radius" [(ngModel)]="searchRadius">
+            <select id="radius" [(ngModel)]="searchRadius" [disabled]="loading">
                 <option [ngValue]="1">1 km</option>
                 <option [ngValue]="3">3 km</option>
                 <option [ngValue]="5">5 km</option>
@@ -68,9 +70,9 @@
             </div>
 
             <label class="toggle">
-    <input type="checkbox" [(ngModel)]="useGps">
-    <span class="slider"></span>
-</label>
+                <input type="checkbox" [(ngModel)]="useGps" [disabled]="loading">
+                <span class="slider"></span>
+            </label>
         </div>
 
         <!-- Confidentialité -->
@@ -81,12 +83,20 @@
             </div>
 
             <label class="toggle">
-    <input type="checkbox" [(ngModel)]="hideExactAddress">
-    <span class="slider"></span>
-</label>
+                <input type="checkbox" [(ngModel)]="hideExactAddress" [disabled]="loading">
+                <span class="slider"></span>
+            </label>
         </div>
-<button type="button" class="save-button" (click)="saveLocation()">
-    Enregistrer les modifications
-</button>
+
+        @if (errorMessage) {
+            <p style="color:#c0392b">{{ errorMessage }}</p>
+        }
+        @if (successMessage) {
+            <p style="color:#0a7a3b">{{ successMessage }}</p>
+        }
+
+        <button type="button" class="save-button" (click)="saveLocation()" [disabled]="loading || saving">
+            {{ saving ? 'Enregistrement…' : 'Enregistrer les modifications' }}
+        </button>
     </div>
 </div>
