@@ -39,6 +39,7 @@ public class SupabaseJwtAuthenticationConverter implements Converter<Jwt, Abstra
                 .filter(User::isActive)
                 .map(user -> List.<GrantedAuthority>of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name())))
                 .orElse(List.of());
+                
         return new JwtAuthenticationToken(jwt, authorities, jwt.getSubject());
     }
 

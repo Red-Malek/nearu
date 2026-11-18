@@ -88,6 +88,8 @@ public class ServiceRequest {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ServiceRequestStatus status;
+    @Column(name = "quote_count", nullable = false)
+private Integer quoteCount = 0;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -121,6 +123,30 @@ public class ServiceRequest {
         request.status = ServiceRequestStatus.SUBMITTED;
         return request;
     }
+    public void reject() {
+    if (this.status != ServiceRequestStatus.SUBMITTED) {
+        throw new IllegalStateException("Cette demande ne peut plus être refusée.");
+    }
+
+    this.status = ServiceRequestStatus.REJECTED;
+}
+public void addQuote() {
+    if (this.status != ServiceRequestStatus.SUBMITTED
+        && this.status != ServiceRequestStatus.QUOTED) {
+        throw new IllegalStateException(
+            "Cette demande ne peut plus recevoir de devis."
+        );
+    }
+
+    if (this.quoteCount >= 3) {
+        throw new IllegalStateException(
+            "Le nombre maximum de devis pour cette demande est atteint."
+        );
+    }
+
+    this.quoteCount++;
+    this.status = ServiceRequestStatus.QUOTED;
+}
 
     @PrePersist
     void onCreate() {
@@ -213,4 +239,7 @@ public class ServiceRequest {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
+    public Integer getQuoteCount() {
+    return quoteCount;
+}
 }

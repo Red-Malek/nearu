@@ -21,7 +21,7 @@
         <ul class="menu" role="menu">
           @if (me.role === 'PROFESSIONAL') {
             <li role="none"><a role="menuitem" routerLink="/mon-commerce/parametres" (click)="close()">Paramètres</a></li>
-            <li role="none"><a role="menuitem" routerLink="/mon-commerce/dashboard" (click)="close()">Dashboard</a></li>
+            <li role="none"><a role="menuitem" routerLink="/merchant-dashboard" (click)="close()">Dashboard</a></li>
           } @else {
             <li role="none"><a role="menuitem" routerLink="/prestataires" (click)="close()">Trouver un prestataire</a></li>
           }

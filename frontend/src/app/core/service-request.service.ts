@@ -3,7 +3,12 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 /** Délai souhaité (RequestTiming.java). */
-export type RequestTiming = 'URGENT' | 'TODAY' | 'WITHIN_48H' | 'SCHEDULED';
+export type RequestTiming =
+  | 'URGENT'
+  | 'TODAY'
+  | 'WITHIN_48H'
+  | 'SCHEDULED'
+  | 'FLEXIBLE';
 
 /** Prestataire choisi, en tête du formulaire (RequestTargetResponse.java). */
 export interface RequestTarget {
@@ -51,7 +56,45 @@ export interface ServiceRequest {
   professionalName: string;
   createdAt: string;
 }
-
+/** Demande reçue par le prestataire (ReceivedRequestResponse.java). */
+export interface ReceivedRequest {
+  id: string;
+  customerName: string;
+  title: string;
+  description: string;
+  serviceName: string;
+  timing: RequestTiming;
+  timingLabel: string;
+  urgent: boolean;
+  preferredDate: string | null;
+  preferredTime: string | null;
+  governorateName: string;
+  addressLine: string;
+  addressNote: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  status: string;
+  statusLabel: string;
+  createdAt: string;
+}
+/** Informations envoyées pour créer un devis. */
+export interface CreateQuote {
+  amount: number;
+  proposedStart: string;
+  estimatedDurationMinutes: number;
+  validUntil: string;
+}
+export interface QuoteResponse {
+  id: string;
+  requestId: string;
+  amount: number;
+  proposedStart: string;
+  estimatedDurationMinutes: number;
+  validUntil: string;
+  status: string;
+  version: number;
+  createdAt: string;
+}
 /** Limites identiques aux validations du backend. */
 export const REQUEST_LIMITS = {
   titleMax: 80,
@@ -75,4 +118,23 @@ export class ServiceRequestService {
   create(request: CreateServiceRequest): Observable<ServiceRequest> {
     return this.http.post<ServiceRequest>('/api/service-requests', request);
   }
+  getReceivedRequests(): Observable<ReceivedRequest[]> {
+  return this.http.get<ReceivedRequest[]>('/api/service-requests/received');
+}
+rejectRequest(requestId: string): Observable<void> {
+  return this.http.patch<void>(
+    `/api/service-requests/${encodeURIComponent(requestId)}/reject`,
+    {}
+  );
+}
+createQuote(requestId: string, quote: CreateQuote): Observable<void> {
+  return this.http.post<void>(
+    `/api/service-requests/${encodeURIComponent(requestId)}/quotes`,
+    quote
+  );
+}
+getMyQuotes(): Observable<QuoteResponse[]> {
+  return this.http.get<QuoteResponse[]>('/api/service-requests/quotes');
+}
+
 }

@@ -143,6 +143,12 @@ export const routes: Routes = [
             .then((m) => m.MerchantRequests),
       },
       {
+  path: 'quotes',
+  loadComponent: () =>
+    import('./features/merchant/pages/merchant-quotes/merchant-quotes')
+      .then((m) => m.MerchantQuotes),
+},
+      {
         path: 'statistics',
         loadComponent: () =>
           import('./features/merchant/pages/merchant-statistics/merchant-statistics')
